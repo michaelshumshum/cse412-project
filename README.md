@@ -15,4 +15,4 @@ pip install -r requirements.txt
 ./start.sh
 ```
 
-The server will be running on `http://localhost:80800` and will available on your network as well.
+The server will be running on `http://localhost:8080` and will available on your network as well.
