@@ -9,6 +9,6 @@ def hello():
     return render_template("index.html", name="World")
 
 
-@app.route("/<name>")
+@app.route("/<string:name>")
 def hello_world(name: str):
     return render_template("index.html", name=name)
