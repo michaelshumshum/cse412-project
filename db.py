@@ -15,7 +15,7 @@ CURSOR = _CONNNECTION.cursor()
 
 def create_tables() -> None:
     """Create tables in the database if the don't exist already."""
-    pass
+    return
 
 
 def cleanup() -> None:
