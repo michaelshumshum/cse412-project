@@ -1,17 +1,14 @@
-import atexit
-
 from flask import Flask
 from flask.templating import render_template
+from pony.orm import db_session
 
 import db
 
 app = Flask(__name__)
 
-db.create_tables()
+app.wsgi_app = db.db_session(app.wsgi_app)  # type: ignore
 
-
-def cleanup():
-    db.cleanup()
+db.operations.create_countries()
 
 
 @app.route("/")
@@ -19,9 +16,7 @@ def hello():
     return render_template("index.html", name="World")
 
 
+@db_session
 @app.route("/<string:name>")
 def hello_world(name: str):
     return render_template("index.html", name=name)
-
-
-atexit.register(cleanup)
