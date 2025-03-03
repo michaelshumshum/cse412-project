@@ -3,3 +3,4 @@ psycopg2
 pre-commit
 ruff==0.9.5
 pony
+pony-stubs

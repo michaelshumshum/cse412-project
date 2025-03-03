@@ -6,7 +6,7 @@ import db
 
 app = Flask(__name__)
 
-app.wsgi_app = db.db_session(app.wsgi_app)  # type: ignore
+app.wsgi_app = db.db_session(app.wsgi_app)
 
 db.operations.create_countries()
 
