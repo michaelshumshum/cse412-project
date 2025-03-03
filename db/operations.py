@@ -5,7 +5,7 @@ from .db import Country
 
 @db_session
 def create_countries():
-    with open("db/countries.txt", "r") as f:
+    with open("db/countries.txt", "r", encoding="utf-8") as f:
         countries = [c.strip().lower() for c in f.readlines()]
         db_countries = Country.select()
         for c in countries:
