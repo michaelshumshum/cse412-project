@@ -37,7 +37,9 @@ class Artist(database.Entity):
     id = orm.PrimaryKey(int, auto=True)
     name = orm.Required(str)
     country = orm.Required(Country)
-    biography = orm.Optional(datetime.datetime)
+    biography = orm.Optional(str)
+    popularity = orm.Optional(float)
+    birthday = orm.Optional(datetime.datetime)
 
     # MANYTOMANY
     songs = orm.Set("Song")

@@ -6,3 +6,4 @@ pony
 pony-stubs
 dotenv
 requests
+Wikipedia-API
