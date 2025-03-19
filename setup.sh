@@ -8,8 +8,12 @@ read -p "Enter the database port: " db_port
 read -p "Enter the database name: " db_name
 read -p "Enter the database user: " db_user
 read -s -p "Enter the database password: "  db_password
+
+echo
 read -s -p "Enter Spotify Cleint ID: " SPOTIFY_CLIENT_ID
-read -s -p "Enter Spotify Client Secret" SPOTIFY_CLIENT_SECRET
+
+echo
+read -s -p "Enter Spotify Client Secret: " SPOTIFY_CLIENT_SECRET
 echo
 
 # create the .env file
