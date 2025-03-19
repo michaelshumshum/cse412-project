@@ -74,7 +74,7 @@ class Song(database.Entity):
     release_date = orm.Optional(datetime.datetime)
     lyrics = orm.Optional(str)
     album = orm.Optional("Album")
-    record_label = orm.Required(RecordLabel)
+    record_label = orm.Optional(RecordLabel)
     track_index = orm.Optional(int)
     writers = orm.Set(Writer)
     producers = orm.Set(Producer)
@@ -92,7 +92,7 @@ class Album(database.Entity):
     name = orm.Required(str)
     artist = orm.Set(Artist)
     release_date = orm.Optional(datetime.datetime)
-    record_label = orm.Required(RecordLabel)
+    record_label = orm.Optional(RecordLabel)
     cover_art = orm.Optional(str)  # url to image
     type = orm.Optional(str)
     popularity = orm.Optional(float)
