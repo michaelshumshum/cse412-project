@@ -36,13 +36,14 @@ Chile
 China
 Colombia
 Comoros
-Congo (Congo-Brazzaville)
+Congo (Democratic Republic)
+Congo (Republic)
 Costa Rica
+Côte d'Ivoire
 Croatia
 Cuba
 Cyprus
 Czechia
-Democratic Republic of the Congo
 Denmark
 Djibouti
 Dominica
@@ -86,6 +87,8 @@ Jordan
 Kazakhstan
 Kenya
 Kiribati
+Korea, North
+Korea, South
 Kuwait
 Kyrgyzstan
 Laos
@@ -123,13 +126,11 @@ New Zealand
 Nicaragua
 Niger
 Nigeria
-North Korea
 North Macedonia
 Norway
 Oman
 Pakistan
 Palau
-Palestine
 Panama
 Papua New Guinea
 Paraguay
@@ -158,7 +159,6 @@ Slovenia
 Solomon Islands
 Somalia
 South Africa
-South Korea
 South Sudan
 Spain
 Sri Lanka
@@ -192,3 +192,13 @@ Vietnam
 Yemen
 Zambia
 Zimbabwe
+Taiwan
+Kosovo
+Palestine
+Western Sahara
+South Ossetia
+Abkhazia
+Transnistria
+Nagorno-Karabakh (Artsakh)
+Hong Kong
+Macau

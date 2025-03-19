@@ -4,3 +4,5 @@ pre-commit
 ruff==0.9.5
 pony
 pony-stubs
+dotenv
+requests

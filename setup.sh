@@ -8,6 +8,8 @@ read -p "Enter the database port: " db_port
 read -p "Enter the database name: " db_name
 read -p "Enter the database user: " db_user
 read -s -p "Enter the database password: "  db_password
+read -s -p "Enter Spotify Cleint ID: " SPOTIFY_CLIENT_ID
+read -s -p "Enter Spotify Client Secret" SPOTIFY_CLIENT_SECRET
 echo
 
 # create the .env file
@@ -16,6 +18,8 @@ echo "DB_USER=$db_user" >> .env
 echo "DB_PASSWORD=$db_password" >> .env
 echo "DB_HOST=$db_host" >> .env
 echo "DB_PORT=$db_port" >> .env
+echo "SPOTIFY_CLIENT_ID=$SPOTIFY_CLIENT_ID" >> .env
+echo "SPOTIFY_CLIENT_SECRET=$SPOTIFY_CLIENT_SECRET" >> .env
 
 
 echo "====================================="
