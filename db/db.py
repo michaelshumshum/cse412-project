@@ -78,7 +78,6 @@ class Song(database.Entity):
     track_index = orm.Optional(int)
     writers = orm.Set(Writer)
     producers = orm.Set(Producer)
-    popularity = orm.Optional(float)
 
     bpm = orm.Optional(int)
     key = orm.Optional(str)
@@ -95,7 +94,7 @@ class Album(database.Entity):
     record_label = orm.Optional(RecordLabel)
     cover_art = orm.Optional(str)  # url to image
     type = orm.Optional(str)
-    popularity = orm.Optional(float)
+    num_tracks = orm.Optional(int)
 
     # ONETOMANY
     songs = orm.Set(Song)
