@@ -1,7 +1,10 @@
 import datetime
 import os
 
+import dotenv
 from pony import orm
+
+dotenv.load_dotenv()
 
 database = orm.Database(
     provider="postgres",
@@ -69,6 +72,7 @@ class Producer(database.Entity):
 class Song(database.Entity):
     id = orm.PrimaryKey(int, auto=True)
     name = orm.Required(str)
+    genre = orm.Optional(str)
     artists = orm.Set(Artist)
     duration = orm.Optional(int)
     release_date = orm.Optional(datetime.datetime)
@@ -89,6 +93,7 @@ class Song(database.Entity):
 class Album(database.Entity):
     id = orm.PrimaryKey(int, auto=True)
     name = orm.Required(str)
+    genre = orm.Optional(str)
     artist = orm.Set(Artist)
     release_date = orm.Optional(datetime.datetime)
     record_label = orm.Optional(RecordLabel)
