@@ -17,10 +17,73 @@ def index():
     return render_template("home.html")
 
 
-# method for searching
+# methods for searching
 @app.route("/search", methods=["GET"])
 def search():
     return render_template("search_request.html")
+
+
+@app.route("/search/artist/<int:artist_id>")
+@db_session
+def search_artist_by_id(artist_id: int):
+    artist = Artist.get(id=artist_id)
+    if not artist:
+        return abort(404)
+
+    result = [
+        {**song.to_dict(with_collections=True, related_objects=True)}
+        for song in list(Song.select(lambda s: artist in s.artists))
+    ]
+
+    # serialize the nested collections
+    for song in result:
+        a_l = []
+        for artist in song["artists"]:
+            d = {
+                "id": artist.id,
+                "name": artist.name,
+            }
+            a_l.append(d)
+        song["artists"] = a_l
+
+        p_l = []
+        for producer in song["producers"]:
+            d = {
+                "id": producer.id,
+                "name": producer.name,
+            }
+            p_l.append(d)
+        song["producers"] = p_l
+
+        w_l = []
+        for writer in song["writers"]:
+            d = {
+                "id": writer.id,
+                "name": writer.name,
+            }
+            w_l.append(d)
+        song["writers"] = w_l
+
+        m_l = []
+        for music_video in song["music_videos"]:
+            d = {
+                "id": music_video.id,
+                "name": music_video.name,
+            }
+            m_l.append(d)
+        song["music_videos"] = m_l
+
+        song["album"] = {
+            "id": song["album"].id,
+            "name": song["album"].name,
+        }
+
+        song["record_label"] = {
+            "id": song["record_label"].id,
+            "name": song["record_label"].name,
+        }
+
+    return render_template("search_result.html", songs=result)
 
 
 @app.route("/songs")
@@ -28,20 +91,12 @@ def search():
 def get_songs():
     query = Song.select()
 
-    artist_names = request.args.get("artist")
-    if artist_names:
-        artists = [
-            Artist.get(name=artist_name) for artist_name in artist_names.split(",")
-        ]
-        if not all(artists):
+    artist_name = request.args.get("artist")
+    if artist_name:
+        artist = Artist.get(name=artist_name)
+        if not artist:
             return abort(404)
-
-        queries = []
-        for artist in artists:
-            queries.append(query.filter(lambda a: artist in a.artists))
-        query = queries[0]
-        for q in queries[1:]:
-            query = query.union(q)
+        query = query.filter(lambda s: artist in s.artists)
 
     album_name = request.args.get("album")
     if album_name:
@@ -102,8 +157,6 @@ def get_songs():
             "id": song["record_label"].id,
             "name": song["record_label"].name,
         }
-
-        print(song)
 
     return result
 

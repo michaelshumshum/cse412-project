@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Search Result Page</title>
+  </head>
+  <body>
+    <h1>Search Results</h1>
+    <a href="/"><button>Back to Search</button></a>
+    {% if songs %}
+    <div class="songs">
+      {% for song in songs %}
+      <div class="song">
+        <h2>{{ song.name }}</h2>
+        <p>
+          Artists: {% for artist in song.artists %} {{ artist.name }}, {% endfor
+          %}
+        </p>
+        <p>
+          Producers: {% for producer in song.producers %} {{ producer.name }},
+          {% endfor %}
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No results found.</p>
+    {% endif %}
+  </body>
+</html>

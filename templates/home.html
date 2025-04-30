@@ -286,10 +286,14 @@
           element.appendChild(album);
 
           const artists = document.createElement("p");
+          artists.textContent = "Artists: "
           for (const a of entry.artists) {
-            artists.textContent += a.name + ", ";
+              const artist = document.createElement("a");
+              artist.textContent = a.name;
+              artist.href = `/search/artist/${a.id}`;
+              artists.appendChild(artist);
+              artists.appendChild(document.createTextNode(", "));
           }
-          artists.textContent = "Artists: " + artists.textContent.slice(0, -2);
           element.appendChild(artists);
 
           const producers = document.createElement("p");
