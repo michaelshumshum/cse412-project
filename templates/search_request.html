@@ -4,8 +4,13 @@
     <title>Search Result Page</title>
 </head>
 <body>
-    <h1>search results h1</h1>
-    
-    <a href="search.html"><button>Back to Search</button></a>
+    <h1>Results: {{ filter_type.capitalize() }}</h1>
+  <ul>
+    {% for row in results %}
+      <li>{{ row }}</li>
+    {% endfor %}
+  </ul>
+
+  <a href="/search"><button>Back to Search</button></a>
 </body>
 </html>

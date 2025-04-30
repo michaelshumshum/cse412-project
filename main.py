@@ -29,10 +29,22 @@ def hello():
 #method for searching
 @app.route("/search", methods = ['POST'])
 def search():
-    keyword = request.form['keyword']
-    cursor.execute()    #where we use SQL script to query based on user's search
-    results = cursor.fetchall()
-    return render_template("search_request.html", results=results)
+    if request.method == 'POST':
+    
+        keyword = request.form['keyword']
+        filter_type = request.form['filter']
+    #cursor.execute()    #where we use SQL script to query based on user's search
+        if filter_type == 'artists':
+            cursor.execute("SELECT * FROM artists WHERE name ILIKE %s", ('%' + keyword + '%',))
+        elif filter_type == 'albums':
+            cursor.execute("SELECT * FROM albums WHERE name ILIKE %s", ('%' + keyword + '%',))
+        elif filter_type == 'songs':
+            cursor.execute("SELECT * FROM songs WHERE name ILIKE %s", ('%' + keyword + '%',))
+        else:
+            return "Invalid filter type"
+        results = cursor.fetchall()
+        return render_template("search_request.html", results=results, filter = filter_type)
+    return render_template("search.html")
 
 
 @db_session
