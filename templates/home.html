@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Centered Search Bar</title>
+  <title>CSE 412 Project</title>
   <style>
+    body {
+        padding: 5em 10em;
+    }
+
     .top-bar {
       display: flex;
       background-color: #f5f5f5;
@@ -16,7 +20,7 @@
 
     .search-bar input[type="text"] {
       padding: 10px;
-      width: 300px;
+      width: 100%;
       border: 1px solid #ccc;
       border-radius: 4px 0 0 4px;
       outline: none;
@@ -37,55 +41,218 @@
     }
 
     .filter-wrapper {
-    position: relative;
-  }
+        position: relative;
+    }
 
-  .filter-toggle {
-    padding: 10px 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f5f5f5;
-    cursor: pointer;
-  }
+    .filter-toggle {
+        padding: 10px 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
 
-  .filter-menu {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background-color: white;
-    padding: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    z-index: 10;
-    width: 200px;
-  }
+    .filter-menu {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background-color: white;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        z-index: 10;
+        width: 200px;
+    }
 
-  .filter-menu input[type="text"],
-  .filter-menu input[list],
-  .filter-menu select {
-    width: 100%;               /* Fill the filter box width */
-    height: 36px;              /* Consistent height */
-    padding: 6px 10px;
-    font-size: 14px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+    .filter-menu input[type="text"],
+    .filter-menu input[list],
+    .filter-menu select {
+        width: 100%;               /* Fill the filter box width */
+        height: 36px;              /* Consistent height */
+        padding: 6px 10px;
+        font-size: 14px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
 
-  .filter-wrapper.active .filter-menu {
-    display: flex;
-  }
+    .filter-wrapper.active .filter-menu {
+        display: flex;
+    }
 
-  .filter-menu label {
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-  }
+    .filter-menu label {
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+    }
+
+    .nav-tab {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        background-color: #f9f9f9;
+    }
+
+    .nav-tab div {
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .nav-tab div.active {
+        background-color: #ccc;
+    }
+
+    .browser > .content > div {
+        display: none;
+    }
+
+    .browser > .content > div.active {
+        display: block;
+    }
   </style>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.filter-toggle').addEventListener('click', () => {
+        document.querySelector('.filter-wrapper').classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+        const wrapper = document.querySelector('.filter-wrapper');
+        if (!wrapper.contains(e.target)) {
+            wrapper.classList.remove('active');
+        }
+        });
+
+        const releaseYear = document.getElementById("releaseYear");
+        const currentYear = new Date().getFullYear();
+
+        for (let year = currentYear; year >= 1930; year--) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        releaseYear.appendChild(option);
+    }
+
+        const slider = document.getElementById("duration-slider");
+        const label = document.getElementById("duration-label");
+
+        function updateLabel(value) {
+        const minutes = Math.floor(value / 60);
+        const seconds = value % 60;
+        label.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initial value
+        updateLabel(slider.value);
+
+        slider.addEventListener("input", () => {
+        updateLabel(slider.value);
+        });
+
+        // browser tab switcher
+        document.querySelectorAll(".nav-tab > div").forEach((tab, index) => {
+            console.log("Tab clicked");
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".nav-tab > div").forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                document.querySelectorAll(".browser > .content > div").forEach(b => b.classList.remove("active"));
+                document.querySelectorAll(".browser > .content > div")[index].classList.add("active");
+            });
+        });
+    })
+
+  </script>
+  <script defer>
+    fetch("/artists")
+        .then(response => response.json())
+        .then(data => {
+        const artists = document.querySelector(".artists");
+        data.forEach(entry => {
+            const element = document.createElement("div");
+            element.classList.add('entry');
+
+            const name = document.createElement("h2");
+            name.textContent = entry.name;
+            element.appendChild(name);
+
+            const bio = document.createElement("p");
+            bio.textContent = entry.biography;
+            element.appendChild(bio);
+
+            const birthdate = document.createElement("p");
+            birthdate.textContent = new Date(entry.birthday).toLocaleDateString();
+            element.appendChild(birthdate);
+
+            const country = document.createElement("p");
+            country.textContent = entry.country;
+            element.appendChild(country);
+
+            const popularity = document.createElement("p");
+            popularity.textContent = `Popularity: ${entry.popularity}`;
+            element.appendChild(popularity);
+
+            artists.appendChild(element);
+        });
+    });
+    fetch("/albums")
+      .then(response => response.json())
+      .then(data => {
+        const albums = document.querySelector(".albums");
+        data.forEach(entry => {
+          const element = document.createElement("div");
+          element.classList.add('entry');
+
+          const name = document.createElement("h2");
+          name.textContent = entry.name;
+          element.appendChild(name);
+
+          const artist = document.createElement("p");
+          artist.textContent = entry.artist;
+          element.appendChild(artist);
+
+          const releaseDate = document.createElement("p");
+          releaseDate.textContent = new Date(entry.release_date).toLocaleDateString();
+          element.appendChild(releaseDate);
+
+          albums.appendChild(element);
+        });
+      });
+    fetch("/songs")
+      .then(response => response.json())
+      .then(data => {
+        const songs = document.querySelector(".songs");
+        data.forEach(entry => {
+          const element = document.createElement("div");
+          element.classList.add('entry');
+
+          const title = document.createElement("h2");
+          title.textContent = entry.title;
+          element.appendChild(title);
+
+          const artist = document.createElement("p");
+          artist.textContent = entry.artist;
+          element.appendChild(artist);
+
+          const album = document.createElement("p");
+          album.textContent = entry.album;
+          element.appendChild(album);
+
+          const duration = document.createElement("p");
+          duration.textContent = entry.duration;
+          element.appendChild(duration);
+
+          songs.appendChild(element);
+        });
+      });
+  </script>
 </head>
 <body>
 
@@ -93,7 +260,7 @@
     <form class="search-bar" action="/search" method="GET">
       <input type="text" name="query" placeholder="Search for artists, albums, songs, & more">
       <button type="submit">Go</button>
-    
+
       <div class="filter-wrapper">
         <button class="filter-toggle" type="button">Filter ▾</button>
         <div class="filter-menu">
@@ -106,7 +273,7 @@
               <option value="album">Album</option>
             </select>
           </label>
-  
+
           <label>
            Genre:
             <select name="genre">
@@ -116,7 +283,7 @@
               <option value="jazz">Jazz</option>
             </select>
           </label>
-  
+
           <label for="producer">Producer:</label>
           <input type="text" id="producer" name="producer" placeHolder="enter here"
 
@@ -144,46 +311,23 @@
      </div>
     </form>
   </div>
+  <div class="browser">
+      <div class="nav-tab">
+          <div class="active">Artists</div>
+          <div>Albums</div>
+          <div>Songs</div>
+      </div>
+      <div class="content">
+          <div class="artists active">
 
-  <script>
-    document.querySelector('.filter-toggle').addEventListener('click', () => {
-      document.querySelector('.filter-wrapper').classList.toggle('active');
-    });
-  
-    document.addEventListener('click', (e) => {
-      const wrapper = document.querySelector('.filter-wrapper');
-      if (!wrapper.contains(e.target)) {
-        wrapper.classList.remove('active');
-      }
-    });
-    
-    const releaseYear = document.getElementById("releaseYear");
-    const currentYear = new Date().getFullYear();
+          </div>
+          <div class="albums">
 
-    for (let year = currentYear; year >= 1930; year--) {
-     const option = document.createElement("option");
-     option.value = year;
-     option.textContent = year;
-     releaseYear.appendChild(option);
-   }
+          </div>
+          <div class="songs">
 
-    const slider = document.getElementById("duration-slider");
-    const label = document.getElementById("duration-label");
-
-    function updateLabel(value) {
-      const minutes = Math.floor(value / 60);
-      const seconds = value % 60;
-      label.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    // Initial value
-    updateLabel(slider.value);
-
-    slider.addEventListener("input", () => {
-      updateLabel(slider.value);
-    });
-    
-  </script>
-
+          </div>
+      </div>
+  </div>
 </body>
 </html>

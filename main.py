@@ -1,7 +1,6 @@
 from flask import Flask, abort, request
 from flask.templating import render_template
 from pony.orm import db_session
-import psycopg2
 
 import db
 from db.db import Album, Artist, Song
@@ -12,55 +11,74 @@ app.wsgi_app = db.db_session(app.wsgi_app)
 
 db.operations.create_countries()
 
-#added connection in main,
-#to store keywords collected from user when interacting with site
-conn = psycopg2.connect(
-    dbname = 'testname',
-    user = 'testuser',
-    password = 'testpassword',
-    host = 'localhost'
-)
-
-cursor = conn.cursor()
 
 @app.route("/")
-def hello():
-    return render_template("index.html", name="World")
+def index():
+    return render_template("home.html")
 
-#method for searching
-@app.route("/search", methods = ['POST'])
+
+# method for searching
+@app.route("/search", methods=["GET"])
 def search():
-    keyword = request.form['keyword']
-    cursor.execute()    #where we use SQL script to query based on user's search
-    results = cursor.fetchall()
-    return render_template("search_request.html", results=results)
+    return render_template("search_request.html")
 
 
 @app.route("/songs")
 @db_session
 def get_songs():
-    artist_name = request.args.get("artist")
-    album_name = request.args.get("album")
+    artist_names = request.args.get("artist")
 
     query = Song.select()
 
-    if artist_name:
-        artist = Artist.get(name=artist_name)
-        if not artist:
+    if artist_names:
+        artists = [
+            Artist.get(name=artist_name) for artist_name in artist_names.split(",")
+        ]
+        if not all(artists):
             return abort(404)
-        query = query.filter(lambda s: artist in s.artists)
 
+        queries = []
+        for artist in artists:
+            queries.append(query.filter(lambda a: artist in a.artists))
+        query = queries[0]
+        for q in queries[1:]:
+            query = query.union(q)
+
+    album_name = request.args.get("album")
     if album_name:
         album = Album.get(name=album_name)
         if not album:
             return abort(404)
         query = query.filter(lambda s: s.album is album)
 
-    return [{**song.to_dict()} for song in list(query)]
+    return [{**song.to_dict()} for song in list(query.distinct())]
 
 
 @db_session
 @app.route("/artists")
 def get_artists():
-    artists = [{**artist.to_dict()} for artist in Artist.select()]
-    return artists
+    query = Artist.select()
+
+    country_name = request.args.get("country")
+    if country_name:
+        query = query.filter(lambda a: a.country == country_name)
+
+    return [{**artist.to_dict()} for artist in list(query)]
+
+
+@app.route("/albums")
+@db_session
+def get_albums():
+    artist_names = request.args.get("artist")
+
+    query = Album.select()
+
+    if artist_names:
+        artists = [
+            Artist.get(name=artist_name) for artist_name in artist_names.split(",")
+        ]
+        if not all(artists):
+            return abort(404)
+        query.filter(lambda a: a)
+
+    return [{**album.to_dict()} for album in list(query.distinct())]
