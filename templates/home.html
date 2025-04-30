@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <title>CSE 412 Project</title>
   <style>
+
+
     body {
-        padding: 5em 10em;
+        padding: 0em 10em;
+        font-family: monospace;
     }
 
     .top-bar {
@@ -24,6 +27,7 @@
       border: 1px solid #ccc;
       border-radius: 4px 0 0 4px;
       outline: none;
+      font-family: monospace;
     }
 
     .search-bar button {
@@ -92,30 +96,63 @@
 
     .nav-tab {
         display: flex;
-        justify-content: space-between;
+        justify-content: start;
+        gap: 10px;
         align-items: center;
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
-        background-color: #f9f9f9;
+        padding: 1em 1em 0 1em;
+        background-color: #f1f1f1;
     }
 
-    .nav-tab div {
+    .nav-tab > div {
+        background: transparent;
         cursor: pointer;
-        padding: 5px 10px;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
+        padding: 0.75em 1em 0.5em 1em;
+        border-radius: 4px 4px 0px 0px;
+        transition: background 0.3s ease;
     }
 
-    .nav-tab div.active {
-        background-color: #ccc;
+    .nav-tab > div.active {
+        background: white;
+    }
+
+    .browser {
+        background: #f1f1f1;
+    }
+
+    .browser > .content {
+        padding: 0 1em;
+        display: flex;
+        flex-direction: column;
     }
 
     .browser > .content > div {
+        background: white;
         display: none;
     }
 
     .browser > .content > div.active {
-        display: block;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .browser > .content > div > .entry {
+        padding: 1em;
+        border: 2px dotted black;
+        margin: 1em;
+    }
+
+    .entry > p {
+        word-break: break-all;
+    }
+  </style>
+  <style>
+    @media (max-width: 768px) {
+        .browser > .content > div.active {
+            grid-template-columns: 1fr;
+        }
+        body {
+            padding: 0 1em;
+        }
     }
   </style>
   <script defer>
@@ -171,6 +208,13 @@
 
   </script>
   <script defer>
+  function secondsToDuration(seconds) {
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${minutes}m ${remainingSeconds}s`;
+  }
+
     fetch("/artists")
         .then(response => response.json())
         .then(data => {
@@ -188,7 +232,7 @@
             element.appendChild(bio);
 
             const birthdate = document.createElement("p");
-            birthdate.textContent = new Date(entry.birthday).toLocaleDateString();
+            birthdate.textContent = new Date(entry.birthday).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             element.appendChild(birthdate);
 
             const country = document.createElement("p");
@@ -200,8 +244,8 @@
             element.appendChild(popularity);
 
             artists.appendChild(element);
+            });
         });
-    });
     fetch("/albums")
       .then(response => response.json())
       .then(data => {
@@ -234,20 +278,45 @@
           element.classList.add('entry');
 
           const title = document.createElement("h2");
-          title.textContent = entry.title;
+          title.textContent = entry.name;
           element.appendChild(title);
 
-          const artist = document.createElement("p");
-          artist.textContent = entry.artist;
-          element.appendChild(artist);
-
           const album = document.createElement("p");
-          album.textContent = entry.album;
+          album.textContent = "Album: " + entry.album.name;
           element.appendChild(album);
 
+          const artists = document.createElement("p");
+          for (const a of entry.artists) {
+            artists.textContent += a.name + ", ";
+          }
+          artists.textContent = "Artists: " + artists.textContent.slice(0, -2);
+          element.appendChild(artists);
+
+          const producers = document.createElement("p");
+          for (const p of entry.producers) {
+            producers.textContent += p.name + ", ";
+          }
+          producers.textContent = "Producers: " + producers.textContent.slice(0, -2);
+          element.appendChild(producers);
+
+          const writers = document.createElement("p");
+          for (const w of entry.writers) {
+            writers.textContent += w.name + ", ";
+          }
+          writers.textContent = "Writers: " + writers.textContent.slice(0, -2);
+          element.appendChild(writers);
+
+          const releaseDate = document.createElement("p");
+          releaseDate.textContent = "Release Date: " + new Date(entry.release_date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          element.appendChild(releaseDate);
+
           const duration = document.createElement("p");
-          duration.textContent = entry.duration;
+          duration.textContent = "Duration: " +  secondsToDuration(entry.duration);
           element.appendChild(duration);
+
+          const details = document.createElement("p");
+          details.textContent = `BPM: ${entry.bpm} -- Key: ${entry.key}`;
+          element.appendChild(details);
 
           songs.appendChild(element);
         });

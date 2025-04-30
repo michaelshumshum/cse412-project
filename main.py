@@ -26,10 +26,9 @@ def search():
 @app.route("/songs")
 @db_session
 def get_songs():
-    artist_names = request.args.get("artist")
-
     query = Song.select()
 
+    artist_names = request.args.get("artist")
     if artist_names:
         artists = [
             Artist.get(name=artist_name) for artist_name in artist_names.split(",")
@@ -51,7 +50,62 @@ def get_songs():
             return abort(404)
         query = query.filter(lambda s: s.album is album)
 
-    return [{**song.to_dict()} for song in list(query.distinct())]
+    result = [
+        {**song.to_dict(with_collections=True, related_objects=True)}
+        for song in list(query.distinct())
+    ]
+
+    # serialize the nested collections
+    for song in result:
+        a_l = []
+        for artist in song["artists"]:
+            d = {
+                "id": artist.id,
+                "name": artist.name,
+            }
+            a_l.append(d)
+        song["artists"] = a_l
+
+        p_l = []
+        for producer in song["producers"]:
+            d = {
+                "id": producer.id,
+                "name": producer.name,
+            }
+            p_l.append(d)
+        song["producers"] = p_l
+
+        w_l = []
+        for writer in song["writers"]:
+            d = {
+                "id": writer.id,
+                "name": writer.name,
+            }
+            w_l.append(d)
+        song["writers"] = w_l
+
+        m_l = []
+        for music_video in song["music_videos"]:
+            d = {
+                "id": music_video.id,
+                "name": music_video.name,
+            }
+            m_l.append(d)
+        song["music_videos"] = m_l
+
+        song["album"] = {
+            "id": song["album"].id,
+            "name": song["album"].name,
+        }
+
+        song["record_label"] = {
+            "id": song["record_label"].id,
+            "name": song["record_label"].name,
+        }
+
+        print(song)
+
+    return result
 
 
 @db_session
