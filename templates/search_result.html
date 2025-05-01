@@ -41,6 +41,21 @@
       </div>
       {% endfor %}
     </div>
+    {% elif albums %}
+    <div class="albums">
+      {% for album in albums %}
+      <div class="album">
+        <h2>{{ album.name }}</h2>
+        <p>Genre: {{ album.genre }}</p>
+        <p>Record Label: {{ album.record_label.name }}</p>
+        <p>
+          Artists: {% for artist in album.artist %} {{ artist.name }}, {% endfor
+          %}
+        </p>
+        <p>Release Date: {{ album.release_date }}</p>
+      </div>
+      {% endfor %}
+    </div>
     {% endif %}
   </body>
 </html>

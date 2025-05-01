@@ -26,6 +26,7 @@ def search():
 @app.route("/search/songs")
 @db_session
 def search_songs():
+    name = request.args.get("name", type=str)
     artist_id = request.args.get("artist", type=int)
     artist_name = request.args.get("artist_name", type=str)
     producer_id = request.args.get("producer", type=int)
@@ -43,6 +44,10 @@ def search_songs():
 
     query = Song.select()
     title_filters = []
+
+    if name:
+        query = query.filter(lambda s: name.lower() in s.name.lower())
+        title_filters.append(f'"is named like "{name}"')
 
     if artist_id:
         artist = Artist.get(id=artist_id)
@@ -135,7 +140,7 @@ def search_songs():
 
     if release_year:
         query = query.filter(lambda s: release_year == s.release_date.year)
-        title_filters.append(f'released in "{release_year}"')
+        title_filters.append(f"released in {release_year}")
 
     if key:
         query = query.filter(lambda s: key == s.key)
@@ -150,56 +155,67 @@ def search_songs():
         for song in list(query)
     ]
 
-    # serialize the nested collections
-    for song in result:
-        a_l = []
-        for artist in song["artists"]:
-            d = {
-                "id": artist.id,
-                "name": artist.name,
-            }
-            a_l.append(d)
-        song["artists"] = a_l
-
-        p_l = []
-        for producer in song["producers"]:
-            d = {
-                "id": producer.id,
-                "name": producer.name,
-            }
-            p_l.append(d)
-        song["producers"] = p_l
-
-        w_l = []
-        for writer in song["writers"]:
-            d = {
-                "id": writer.id,
-                "name": writer.name,
-            }
-            w_l.append(d)
-        song["writers"] = w_l
-
-        m_l = []
-        for music_video in song["music_videos"]:
-            d = {
-                "id": music_video.id,
-                "name": music_video.name,
-            }
-            m_l.append(d)
-        song["music_videos"] = m_l
-
-        song["album"] = {
-            "id": song["album"].id,
-            "name": song["album"].name,
-        }
-
-        song["record_label"] = {
-            "id": song["record_label"].id,
-            "name": song["record_label"].name,
-        }
-
     return render_template(
         "search_result.html", title=f"Songs {', '.join(title_filters)}", songs=result
+    )
+
+
+@app.route("/search/albums")
+def search_albums():
+    name = request.args.get("name", type=str)
+    artist_id = request.args.get("artist", type=int)
+    artist_name = request.args.get("artist_name", type=str)
+    record_label_id = request.args.get("record_label", type=int)
+    record_label_name = request.args.get("record_label_name", type=str)
+    genre = request.args.get("genre", type=str)
+    release_year = request.args.get("release_year", type=int)
+
+    query = Album.select()
+    title_filters = []
+
+    if name:
+        query = query.filter(lambda a: name.lower() in a.name.lower())
+        title_filters.append(f'is named like "{name}"')
+
+    if artist_id:
+        artist = Artist.get(id=artist_id)
+        if not artist:
+            abort(404)
+        query = query.filter(lambda a: artist in a.artist)
+        title_filters.append(f'with artist "{artist.name}"')
+    elif artist_name:
+        artist = Artist.get(name=artist_name)
+        if not artist:
+            abort(404)
+        query = query.filter(lambda a: artist in a.artist)
+        title_filters.append(f'with artist "{artist.name}"')
+
+    if record_label_id:
+        record_label = RecordLabel.get(id=record_label_id)
+        query = query.filter(lambda a: a.record_label == record_label)
+        title_filters.append(f'from record label "{record_label.name}"')
+    elif record_label_name:
+        record_label = RecordLabel.get(name=record_label_name)
+        if not record_label:
+            abort(404)
+        query = query.filter(lambda a: record_label == a.record_label)
+        title_filters.append(f'from record label "{record_label.name}"')
+
+    if release_year:
+        query = query.filter(lambda a: release_year == a.release_date.year)
+        title_filters.append(f"released in {release_year}")
+
+    if genre:
+        query = query.filter(lambda a: genre == a.genre)
+        title_filters.append(f'with genre "{genre}"')
+
+    result = [
+        {**album.to_dict(with_collections=True, related_objects=True)}
+        for album in list(query)
+    ]
+
+    return render_template(
+        "search_result.html", title=f"Albums {', '.join(title_filters)}", albums=result
     )
 
 

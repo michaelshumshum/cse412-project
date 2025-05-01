@@ -273,11 +273,15 @@
           name.appendChild(link);
           element.appendChild(name);
 
+          const num_songs = document.createElement("p");
+          num_songs.textContent = `Number of Songs: ${entry.num_tracks}`;
+          element.appendChild(num_songs);
+
           const genre = document.createElement("p");
           genre.textContent = "Genre: ";
           const genre_link = document.createElement("a");
           genre_link.textContent = entry.genre;
-          genre_link.href = `/search/songs?genre=${entry.genre}`;
+          genre_link.href = `/search/albums?genre=${entry.genre}`;
           genre.appendChild(genre_link);
           element.appendChild(genre);
 
@@ -286,7 +290,7 @@
           for (const a of entry.artists) {
               const artist = document.createElement("a");
               artist.textContent = a.name;
-              artist.href = `/search/songs?artist=${a.id}`;
+              artist.href = `/search/albums?artist=${a.id}`;
               artists.appendChild(artist);
               if (a !== entry.artists[entry.artists.length - 1]) {
                   artists.appendChild(document.createTextNode(", "));
@@ -298,7 +302,7 @@
           record.textContent = "Record Label: ";
           const recordLabelLink = document.createElement("a");
           recordLabelLink.textContent = entry.record_label.name;
-          recordLabelLink.href = `/search/songs?record_label=${entry.record_label.id}`;
+          recordLabelLink.href = `/search/albums?record_label=${entry.record_label.id}`;
           record.appendChild(recordLabelLink);
           element.appendChild(record);
 
@@ -307,7 +311,7 @@
           releaseDate.textContent = "Release Date: ";
           const release_date_link = document.createElement("a");
           release_date_link.textContent = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-          release_date_link.href = `/search/songs?release_year=${date.getFullYear()}`;
+          release_date_link.href = `/search/albums?release_year=${date.getFullYear()}`;
           releaseDate.appendChild(release_date_link);
           element.appendChild(releaseDate);
 
