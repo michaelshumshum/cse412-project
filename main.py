@@ -199,6 +199,7 @@ def search_songs():
 @app.route("/search/albums")
 def search_albums():
     name = request.args.get("name", type=str)
+    album_type = request.args.get("type", type=str)
     artist_id = request.args.get("artist", type=int)
     artist_name = request.args.get("artist_name", type=str)
     record_label_id = request.args.get("record_label", type=int)
@@ -215,6 +216,10 @@ def search_albums():
     if name is not None:
         query = query.filter(lambda a: name.lower() in a.name.lower())
         title_filters.append(f'is named like "{name}"')
+
+    if album_type is not None:
+        query = query.filter(lambda a: a.type == album_type)
+        title_filters.append(f'is of type "{album_type}"')
 
     if artist_id is not None:
         artist = Artist.get(id=artist_id)

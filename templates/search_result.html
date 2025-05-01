@@ -94,6 +94,7 @@
         <h2>{{ song.name }}</h2>
         <p>Genre: {{ song.genre }}</p>
         <p>Album: {{ song.album.name }}</p>
+        <p>Track Index: {{ song.track_index }}</p>
         <p>
           Artists: {% for artist in song.artists %} {{ artist.name }}, {% endfor
           %}
@@ -130,6 +131,7 @@
       {% for album in albums %}
       <div class="album">
         <h2>{{ album.name }}</h2>
+        <p>Type: {{ album.type }}</p>
         <p>Number of Songs: {{ album.num_tracks }}</p>
         <p>Genre: {{ album.genre }}</p>
         <p>
