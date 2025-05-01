@@ -226,7 +226,7 @@
             const name = document.createElement("h2");
             const link = document.createElement("a");
             link.textContent = entry.name;
-            link.href = `/search/artist/${entry.id}`;
+            link.href = `/search/songs?artist=${entry.id}`;
             name.appendChild(link);
             element.appendChild(name);
 
@@ -260,7 +260,7 @@
           const name = document.createElement("h2");
           const link = document.createElement("a");
           link.textContent = entry.name;
-          link.href = `/search/album/${entry.id}`;
+          link.href = `/search/songs?album=${entry.id}`;
           name.appendChild(link);
           element.appendChild(name);
 
@@ -273,7 +273,7 @@
           for (const a of entry.artists) {
               const artist = document.createElement("a");
               artist.textContent = a.name;
-              artist.href = `/search/artist/${a.id}`;
+              artist.href = `/search/songs?artist=${a.id}`;
               artists.appendChild(artist);
               if (a !== entry.artists[entry.artists.length - 1]) {
                   artists.appendChild(document.createTextNode(", "));
@@ -312,7 +312,7 @@
           album.textContent = "Album: ";
           const album_link = document.createElement("a");
           album_link.textContent = entry.album.name;
-          album_link.href = `/search/album/${entry.album.id}`;
+          album_link.href = `/search/songs?album=${entry.album.id}`;
           album.appendChild(album_link);
           element.appendChild(album);
 
@@ -321,7 +321,7 @@
           for (const a of entry.artists) {
               const artist = document.createElement("a");
               artist.textContent = a.name;
-              artist.href = `/search/artist/${a.id}`;
+              artist.href = `/search/songs?artist=${a.id}`;
               artists.appendChild(artist);
               if (a !== entry.artists[entry.artists.length - 1]) {
                   artists.appendChild(document.createTextNode(", "));
