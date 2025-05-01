@@ -3,9 +3,72 @@
   <head>
     <title>Search Result Page</title>
   </head>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 0em 10em;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f1f1f1;
+      padding: 1em 2em;
+    }
+
+    header > * {
+      margin: 0;
+    }
+
+    header > a {
+      display: block;
+      padding: 0.25em;
+      background: white;
+      color: black;
+      text-decoration: none;
+    }
+
+    header > a::before {
+      content: "< ";
+    }
+
+    header > a:hover {
+      background: #eee;
+    }
+
+    .songs,
+    .artists,
+    .albums {
+      padding: 1em;
+    }
+
+    .song,
+    .album,
+    .artist {
+      border: 2px dotted black;
+      margin: 1em;
+      padding: 1em;
+    }
+
+    .songs > p,
+    .artists > p,
+    .albums > p {
+      word-break: break-all;
+    }
+  </style>
+  <style>
+    @media (max-width: 768px) {
+      body {
+        padding: 0 1em;
+      }
+    }
+  </style>
   <body>
-    <h1>{% if title %}{{ title }}{% else %}Search Results{% endif %}</h1>
-    <a href="/"><button>Back to Search</button></a>
+    <header>
+      <h1>{% if title %}{{ title }}{% else %}Search Results{% endif %}</h1>
+      <a href="/">Back to Search</a>
+    </header>
     {% if songs %}
     <div class="songs">
       {% for song in songs %}
@@ -25,6 +88,8 @@
           Writers: {% for writer in song.writers %} {{ writer.name }}, {% endfor
           %}
         </p>
+        <p>Record Label: {{ song.record_label.name }}</p>
+        <p>Release Date: {{ song.release_date }}</p>
         <p>BPM: {{ song.bpm }} -- Key: {{ song.key }}</p>
       </div>
       {% endfor %}
@@ -46,12 +111,13 @@
       {% for album in albums %}
       <div class="album">
         <h2>{{ album.name }}</h2>
+        <p>Number of Songs: {{ album.num_tracks }}</p>
         <p>Genre: {{ album.genre }}</p>
-        <p>Record Label: {{ album.record_label.name }}</p>
         <p>
           Artists: {% for artist in album.artist %} {{ artist.name }}, {% endfor
           %}
         </p>
+        <p>Record Label: {{ album.record_label.name }}</p>
         <p>Release Date: {{ album.release_date }}</p>
       </div>
       {% endfor %}
