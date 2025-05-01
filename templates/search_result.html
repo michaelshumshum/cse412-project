@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>CSE 412 - {{ title }}</title>
+    <link rel="icon" href="/favicon.ico" />
+    <style>
+      :root {
+        --highlight: #007bff;
+      }
+
+      * {
+        transition: all 0.3s ease;
+        font-family: monospace;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      a {
+        color: black;
+        display: inline-block;
+      }
+
+      a:visited {
+        color: unset;
+      }
+
+      a:hover {
+        color: var(--highlight);
+        transform: skew(-10deg);
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1em 2em;
+        background-color: #f1f1f1;
+      }
+
+      header > * {
+        margin: 0;
+      }
+
+      header > a {
+        font-size: 1.2em;
+      }
+
+      header > a::before {
+        content: "< ";
+      }
+
+      header > a:hover {
+        background: #eee;
+      }
+
+      .songs,
+      .artists,
+      .albums {
+        background-color: #f1f1f1;
+        padding: 1em;
+      }
+
+      .song,
+      .album,
+      .artist {
+        border: 2px dotted black;
+        margin: 1em;
+        padding: 1em;
+        background: white;
+      }
+
+      .songs > p,
+      .artists > p,
+      .albums > p {
+        word-break: break-all;
+      }
+    </style>
+    <style>
+      @media (max-width: 768px) {
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>{% if title %}{{ title }}{% else %}Search Results{% endif %}</h1>
+      <a href="/">Back to Search</a>
+    </header>
+    {% if songs %}
+    <div class="songs">
+      {% for song in songs %}
+      <div class="song">
+        <h2>{{ song.name }}</h2>
+        <p>Genre: {{ song.genre }}</p>
+        <p>Album: {{ song.album.name }}</p>
+        <p>
+          Artists: {% for artist in song.artists %} {{ artist.name }}, {% endfor
+          %}
+        </p>
+        <p>
+          Producers: {% for producer in song.producers %} {{ producer.name }},
+          {% endfor %}
+        </p>
+        <p>
+          Writers: {% for writer in song.writers %} {{ writer.name }}, {% endfor
+          %}
+        </p>
+        <p>Record Label: {{ song.record_label.name }}</p>
+        <p>Release Date: {{ song.release_date }}</p>
+        <p>Duration: {{ song.duration }}</p>
+        <p>BPM: {{ song.bpm }} -- Key: {{ song.key }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% elif artists %}
+    <div class="artists">
+      {% for artist in artists %}
+      <div class="artist">
+        <h2>{{ artist.name }}</h2>
+        <p>Biography: {{ artist.biography }}</p>
+        <p>Country: {{ artist.country.name }}</p>
+        <p>Birthdate: {{ artist.birthday }}</p>
+        <p>Popularity: {{ artist.popularity }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% elif albums %}
+    <div class="albums">
+      {% for album in albums %}
+      <div class="album">
+        <h2>{{ album.name }}</h2>
+        <p>Number of Songs: {{ album.num_tracks }}</p>
+        <p>Genre: {{ album.genre }}</p>
+        <p>
+          Artists: {% for artist in album.artist %} {{ artist.name }}, {% endfor
+          %}
+        </p>
+        <p>Record Label: {{ album.record_label.name }}</p>
+        <p>Release Date: {{ album.release_date }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </body>
+</html>

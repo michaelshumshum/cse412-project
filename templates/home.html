@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>CSE 412 Project</title>
+    <link rel="icon" href="/favicon.ico">
+    <style>
+      :root {
+        --highlight: #007bff
+      }
+
+      * {
+        transition: all 0.3s ease;
+        font-family: monospace;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      a {
+        color: black;
+        display: inline-block;
+      }
+
+      a:visited {
+        color: unset;
+      }
+
+      a:hover {
+        color: var(--highlight);
+        transform: skew(-10deg);
+      }
+
+      .top-bar {
+        display: flex;
+        width: 100%;
+        background-color: #f5f5f5;
+      }
+
+      .search-bar {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .search-container {
+        grid-column: 1/3;
+        margin: 1em;
+      }
+
+      .search-bar input[type="text"] {
+        padding: 1em;
+        width: 100%;
+        border: 2px dotted black;
+        border-radius: 0;
+        outline: none;
+      }
+
+      .search-bar button {
+        padding: 1em 2em;
+        border: none;
+        background-color: var(--highlight);
+        color: white;
+        border-radius: 0;
+        cursor: pointer;
+      }
+
+      .search-bar button:hover {
+        background-color: #0056b4;
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .filter-wrapper {
+        position: relative;
+      }
+
+      .filter-toggle {
+        padding: 10px 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f5f5f5;
+        cursor: pointer;
+      }
+
+      .filter-menu {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background-color: white;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        width: 200px;
+      }
+
+      .filter-menu input[type="text"],
+      .filter-menu input[list],
+      .filter-menu select {
+        width: 100%;
+        /* Fill the filter box width */
+        height: 36px;
+        /* Consistent height */
+        padding: 6px 10px;
+        font-size: 14px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .filter-wrapper.active .filter-menu {
+        display: flex;
+      }
+
+      .filter-menu label {
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+      }
+
+      .nav-tab {
+        display: flex;
+        justify-content: start;
+        gap: 10px;
+        align-items: center;
+        padding: 1em 1em 0 2em;
+        background-color: #f1f1f1;
+        width: 100;
+      }
+
+      .nav-tab>div {
+        background: transparent;
+        cursor: pointer;
+        padding: 1em;
+        border: 2px dotted black;
+      }
+
+      .nav-tab>div:hover {
+        background: white;
+        color: black;
+        border: 2px dotted black;
+        ;
+      }
+
+      .nav-tab>div.active {
+        background: var(--highlight);
+        color: white;
+        border: 2px dotted transparent;
+      }
+
+      .browser {
+        background-color: #f1f1f1;
+      }
+
+      .browser>.content {
+        padding: 0 1em;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .browser>.content>div {
+        display: none;
+      }
+
+      .browser>.content>div.active {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .browser>.content>div>.entry {
+        padding: 1em;
+        border: 2px dotted black;
+        margin: 1em;
+        background: white;
+      }
+
+      .entry>p {
+        word-break: break-all;
+      }
+    </style>
+    <style>
+      @media (max-width: 768px) {
+        .browser>.content>div.active {
+          grid-template-columns: 1fr;
+        }
+
+        .search-container {
+          grid-column: unset;
+        }
+      }
+    </style>
+    <script defer>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.filter-toggle').addEventListener('click', () => {
+          document.querySelector('.filter-wrapper').classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+          const wrapper = document.querySelector('.filter-wrapper');
+          if (!wrapper.contains(e.target)) {
+            wrapper.classList.remove('active');
+          }
+        });
+        const numTracks = document.getElementById("numTracks");
+        for (let c = 1; c <= 32; c++) {
+          const option = document.createElement("option");
+          option.value = c;
+          option.textContent = c;
+          numTracks.appendChild(option);
+        }
+        const trackNum = document.getElementById("trackNum");
+        for (let c = 1; c <= 32; c++) {
+          const option = document.createElement("option");
+          option.value = c;
+          option.textContent = c;
+          trackNum.appendChild(option);
+        }
+        const slider = document.getElementById("duration-slider");
+        const label = document.getElementById("duration-label");
+
+        function updateLabel(value) {
+          const minutes = Math.floor(value / 60);
+          const seconds = value % 60;
+          label.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        // Initial value
+        updateLabel(slider.value);
+        slider.addEventListener("input", () => {
+          updateLabel(slider.value);
+        });
+        const slider2 = document.getElementById('popularity-slider');
+        const label2 = document.getElementById('popularity-value');
+        slider2.addEventListener('input', () => {
+          label2.textContent = slider2.value;
+        });
+        const slider3 = document.getElementById('bpm-slider');
+        const label3 = document.getElementById('bpm-value');
+        slider3.addEventListener('input', () => {
+          label3.textContent = slider3.value;
+        });
+        // browser tab switcher
+        document.querySelectorAll(".nav-tab > div").forEach((tab, index) => {
+          console.log("Tab clicked");
+          tab.addEventListener("click", () => {
+            document.querySelectorAll(".nav-tab > div").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            document.querySelectorAll(".browser > .content > div").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll(".browser > .content > div")[index].classList.add("active");
+          });
+        });
+        // decides which filter to use
+        document.querySelectorAll('.filter-toggle').forEach(button => {
+          button.addEventListener('click', function() {
+            const filterMenu = this.closest('.filter-wrapper').querySelector('.filter-menu');
+            filterMenu.style.display = filterMenu.style.display === 'flex' ? 'none' : 'flex';
+          });
+        });
+      })
+    </script>
+    <script defer>
+      function secondsToDuration(seconds) {
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}m ${remainingSeconds}s`;
+      }
+      fetch("/artists").then(response => response.json()).then(data => {
+        const artists = document.querySelector(".artists");
+        data.forEach(entry => {
+          const element = document.createElement("div");
+          element.classList.add('entry');
+          const name = document.createElement("h2");
+          const link = document.createElement("a");
+          link.textContent = entry.name;
+          link.href = `/search/songs?artist=${entry.id}`;
+          name.appendChild(link);
+          element.appendChild(name);
+          const bio = document.createElement("p");
+          bio.textContent = entry.biography;
+          element.appendChild(bio);
+          const birthdate = document.createElement("p");
+          const birth = new Date(entry.birthday);
+          birthdate.textContent = "Birthdate: ";
+          const birthLink = document.createElement("a");
+          birthLink.textContent = birth.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+          });
+          birthLink.href = `/search/artists?birth_year=${birth.getFullYear()}`;
+          birthdate.appendChild(birthLink);
+          element.appendChild(birthdate);
+          const country = document.createElement("p");
+          country.textContent = "Country: ";
+          const country_link = document.createElement("a");
+          country_link.textContent = entry.country;
+          country_link.href = `/search/artists?country=${entry.country}`;
+          country.appendChild(country_link);
+          element.appendChild(country);
+          const popularity = document.createElement("p");
+          popularity.textContent = `Popularity: ${entry.popularity}`;
+          element.appendChild(popularity);
+          artists.appendChild(element);
+        });
+      });
+      fetch("/albums").then(response => response.json()).then(data => {
+        const albums = document.querySelector(".albums");
+        data.forEach(entry => {
+          const element = document.createElement("div");
+          element.classList.add('entry');
+          const name = document.createElement("h2");
+          const link = document.createElement("a");
+          link.textContent = entry.name;
+          link.href = `/search/songs?album=${entry.id}`;
+          name.appendChild(link);
+          element.appendChild(name);
+          const num_songs = document.createElement("p");
+          num_songs.textContent = `Number of Songs: ${entry.num_tracks}`;
+          element.appendChild(num_songs);
+          const genre = document.createElement("p");
+          genre.textContent = "Genre: ";
+          const genre_link = document.createElement("a");
+          genre_link.textContent = entry.genre;
+          genre_link.href = `/search/albums?genre=${entry.genre}`;
+          genre.appendChild(genre_link);
+          element.appendChild(genre);
+          const artists = document.createElement("p");
+          artists.textContent = "Artists: "
+          for (const a of entry.artists) {
+            const artist = document.createElement("a");
+            artist.textContent = a.name;
+            artist.href = `/search/albums?artist=${a.id}`;
+            artists.appendChild(artist);
+            if (a !== entry.artists[entry.artists.length - 1]) {
+              artists.appendChild(document.createTextNode(", "));
+            }
+          }
+          element.appendChild(artists);
+          const record = document.createElement("p");
+          record.textContent = "Record Label: ";
+          const recordLabelLink = document.createElement("a");
+          recordLabelLink.textContent = entry.record_label.name;
+          recordLabelLink.href = `/search/albums?record_label=${entry.record_label.id}`;
+          record.appendChild(recordLabelLink);
+          element.appendChild(record);
+          const releaseDate = document.createElement("p");
+          const date = new Date(entry.release_date);
+          releaseDate.textContent = "Release Date: ";
+          const release_date_link = document.createElement("a");
+          release_date_link.textContent = date.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+          });
+          release_date_link.href = `/search/albums?release_year=${date.getFullYear()}`;
+          releaseDate.appendChild(release_date_link);
+          element.appendChild(releaseDate);
+          albums.appendChild(element);
+        });
+      });
+      fetch("/songs").then(response => response.json()).then(data => {
+        const songs = document.querySelector(".songs");
+        data.forEach(entry => {
+          const element = document.createElement("div");
+          element.classList.add('entry');
+          const title = document.createElement("h2");
+          title.textContent = entry.name;
+          element.appendChild(title);
+          const genre = document.createElement("p");
+          genre.textContent = "Genre: ";
+          const genre_link = document.createElement("a");
+          genre_link.textContent = entry.genre;
+          genre_link.href = `/search/songs?genre=${entry.genre}`;
+          genre.appendChild(genre_link);
+          element.appendChild(genre);
+          const album = document.createElement("p");
+          album.textContent = "Album: ";
+          const album_link = document.createElement("a");
+          album_link.textContent = entry.album.name;
+          album_link.href = `/search/songs?album=${entry.album.id}`;
+          album.appendChild(album_link);
+          element.appendChild(album);
+          const artists = document.createElement("p");
+          artists.textContent = "Artists: "
+          for (const a of entry.artists) {
+            const artist = document.createElement("a");
+            artist.textContent = a.name;
+            artist.href = `/search/songs?artist=${a.id}`;
+            artists.appendChild(artist);
+            if (a !== entry.artists[entry.artists.length - 1]) {
+              artists.appendChild(document.createTextNode(", "));
+            }
+          }
+          element.appendChild(artists);
+          const producers = document.createElement("p");
+          producers.textContent = "Producers: "
+          for (const p of entry.producers) {
+            const link = document.createElement("a");
+            link.textContent = p.name;
+            link.href = `/search/songs?producer=${p.id}`;
+            producers.appendChild(link);
+            if (p !== entry.producers[entry.producers.length - 1]) {
+              producers.appendChild(document.createTextNode(", "));
+            }
+          }
+          element.appendChild(producers);
+          const writers = document.createElement("p");
+          writers.textContent = "Writers: "
+          for (const w of entry.writers) {
+            const link = document.createElement("a");
+            link.textContent = w.name;
+            link.href = `/search/songs?writer=${w.id}`;
+            writers.appendChild(link);
+            if (w !== entry.writers[entry.writers.length - 1]) {
+              writers.appendChild(document.createTextNode(", "));
+            }
+          }
+          element.appendChild(writers);
+          const record = document.createElement("p");
+          record.textContent = "Record Label: ";
+          const recordLabelLink = document.createElement("a");
+          recordLabelLink.textContent = entry.record_label.name;
+          recordLabelLink.href = `/search/songs?record_label=${entry.record_label.id}`;
+          record.appendChild(recordLabelLink);
+          element.appendChild(record);
+          const releaseDate = document.createElement("p");
+          const date = new Date(entry.release_date);
+          releaseDate.textContent = "Release Date: ";
+          const release_date_link = document.createElement("a");
+          release_date_link.textContent = date.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+          });
+          release_date_link.href = `/search/songs?release_year=${date.getFullYear()}`;
+          releaseDate.appendChild(release_date_link);
+          element.appendChild(releaseDate);
+          const duration = document.createElement("p");
+          duration.textContent = "Duration: " + secondsToDuration(entry.duration);
+          element.appendChild(duration);
+          const details = document.createElement("a");
+          details.textContent = `BPM: ${entry.bpm} -- Key: ${entry.key}`;
+          details.href = `/search/songs?bpm_eq=${entry.bpm}&key=${entry.key}`;
+          element.appendChild(details);
+          songs.appendChild(element);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <img alt="icon" src="favicon.ico" style="position: absolute; right: 2em; top: 1em;" />
+    <div class="browser">
+      <div class="nav-tab">
+        <div class="active">Artists</div>
+        <div>Albums</div>
+        <div>Songs</div>
+      </div>
+      <div class="content">
+        <div class="artists active">
+          <div class="search-container">
+            <form class="search-bar" action="/search" method="GET">
+              <input type="text" name="query" placeholder="Search for artists">
+              <button type="submit">Go</button>
+              <div class="filter-wrapper">
+                <button class="filter-toggle" type="button">Filter ▾</button>
+                <div class="filter-menu">
+                  <label for="country">Country:</label>
+                  <input type="text" id="country" name="country" placeHolder="enter here" <label for="birthYear">Birth Year:</label>
+                  <input type="text" id="birthYear" name="birthYear" placeHolder="enter here" <label> Popularity: <select name="more or less">
+                    <option value="">Greater Than</option>
+                    <option value="exactly">Exactly</option>
+                    <option value="shorter than">Shorter Than</option>
+                  </select>
+                  <input type="range" name="popularity-slider" id="popularity-slider" min="0" max="100" value="50">
+                  <span id="popularity-value">50</span>
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="albums">
+          <div class="search-container">
+            <form class="search-bar" action="/search" method="GET">
+              <input type="text" name="query" placeholder="Search for albums">
+              <button type="submit">Go</button>
+              <div class="filter-wrapper">
+                <button class="filter-toggle" type="button">Filter ▾</button>
+                <div class="filter-menu">
+                  <label> Genre: <select name="genre">
+                      <option value="">Any</option>
+                      <option value="blues">Blues</option>
+                      <option value="country">Country</option>
+                      <option value="hip-hop">Hip-Hop</option>
+                      <option value="house">House</option>
+                      <option value="jazz">Jazz</option>
+                      <option value="metal">Metal</option>
+                      <option value="pop">Pop</option>
+                      <option value="rap">Rap</option>
+                      <option value="rock">Rock</option>
+                    </select>
+                  </label>
+                  <label> Album Type: <select name="albumType">
+                      <option value="">Any</option>
+                      <option value="single">Single</option>
+                      <option value="album">Album</option>
+                    </select>
+                  </label>
+                  <label>
+                    <label for="numTracks"># of Songs:</label>
+                    <select id="numTracks" name="numTracks">
+                      <option value="">Any</option>
+                    </select>
+                    <select name="more or less">
+                      <option value="">Greater Than</option>
+                      <option value="exactly">Exactly</option>
+                      <option value="shorter than">Shorter Than</option>
+                    </select>
+                  </label>
+                  <label for="releaseYear">Release Year:</label>
+                  <input type="text" id="releaseYear" name="releaseYear" placeHolder="enter here" <label for="recordLabel">Record Label:</label>
+                  <input type="text" id="recordLabel" name="recordLabel" placeHolder="enter here" <label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="songs">
+          <div class="search-container">
+            <form class="search-bar" action="/search" method="GET">
+              <input type="text" name="query" placeholder="Search for songs">
+              <button type="submit">Go</button>
+              <div class="filter-wrapper">
+                <button class="filter-toggle" type="button">Filter ▾</button>
+                <div class="filter-menu">
+                  <label>
+                    <label> Genre: <select name="genre">
+                        <option value="">Any</option>
+                        <option value="blues">Blues</option>
+                        <option value="country">Country</option>
+                        <option value="hip-hop">Hip-Hop</option>
+                        <option value="house">House</option>
+                        <option value="jazz">Jazz</option>
+                        <option value="metal">Metal</option>
+                        <option value="pop">Pop</option>
+                        <option value="rap">Rap</option>
+                        <option value="rock">Rock</option>
+                      </select>
+                    </label>
+                    <label for="releaseYear">Release Year:</label>
+                    <input type="text" id="releaseYear" name="releaseYear" placeHolder="enter here" <label for="albumName">Album Name:</label>
+                  <input type="text" id="albumName" name="albumName" placeHolder="enter here" <label>
+                  <label for="trackNum">Track #:</label>
+                  <select id="trackNum" name="trackNum">
+                    <option value="">Any</option>
+                  </select>
+                  </label>
+                  <label for="lyrics">Lyrics:</label>
+                  <input type="text" id="lyrics" name="lyrics" placeHolder="enter here" <label for="recordLabel">Record Label:</label>
+                  <input type="text" id="recordLabel" name="recordLabel" placeHolder="enter here" <label for="producer">Producer:</label>
+                  <input type="text" id="producer" name="producer" placeHolder="enter here" <label for="writer">Writer:</label>
+                  <input type="text" id="writer" name="writer" placeHolder="enter here" <label> Key: <select name="key">
+                    <option value="">Any</option>
+                    <option value="a">A</option>
+                    <option value="b">B</option>
+                    <option value="c">C</option>
+                    <option value="d">D</option>
+                    <option value="e">E</option>
+                    <option value="f">F</option>
+                    <option value="g">G</option>
+                  </select>
+                  </label>
+                  <label> Duration: <select name="more or less">
+                      <option value="">Longer Than</option>
+                      <option value="exactly">Exactly</option>
+                      <option value="shorter than">Shorter Than</option>
+                    </select>
+                    <input type="range" name="duration" id="duration-slider" min="0" max="600" value="0">
+                    <span id="duration-label">0:00</span>
+                  </label>
+                  <label> BPM: <select name="more or less">
+                      <option value="">Greater Than</option>
+                      <option value="exactly">Exactly</option>
+                      <option value="shorter than">Shorter Than</option>
+                    </select>
+                    <label for="bpm-slider">Value:</label>
+                    <input type="range" name="bpm-slider" id="bpm-slider" min="60" max="200" value="60">
+                    <span id="bpm-value">60</span>
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
