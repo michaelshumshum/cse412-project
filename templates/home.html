@@ -6,7 +6,7 @@
     <link rel="icon" href="/favicon.ico">
     <style>
       :root {
-        --highlight: #007bff
+        --highlight: #3b9c90
       }
 
       * {
@@ -66,8 +66,8 @@
         cursor: pointer;
       }
 
-      .search-bar button:hover {
-        background-color: #0056b4;
+      .search-bar button:hover, .search-bar input[type="submit"]:hover {
+        background-color: #164a44;
       }
 
       .button-group {
@@ -82,9 +82,9 @@
 
       .filter-toggle {
         padding: 10px 16px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: #f5f5f5;
+        border: none;
+        background-color: var(--highlight);
+        color: white;
         cursor: pointer;
       }
 
@@ -618,8 +618,8 @@
                 <div class="filter-menu">
                   <label for="country">Country:</label>
                   <input type="text" id="country" name="country" placeHolder="enter here" />
-                  <label for="birthYear">Birth Year:</label>
-                  <input type="text" id="birth_year" name="birthYear" placeHolder="enter here" />
+                  <label for="birth_year">Birth Year:</label>
+                  <input type="text" id="birth_year" name="birth_year" placeHolder="enter here" />
                   <label> Popularity: <select name="popularity">
                     <option value="greater_than">Greater Than</option>
                     <option value="exactly">Exactly</option>
