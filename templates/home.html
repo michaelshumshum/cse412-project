@@ -57,7 +57,7 @@
         outline: none;
       }
 
-      .search-bar button {
+      .search-bar input[type="submit"] {
         padding: 1em 2em;
         border: none;
         background-color: var(--highlight);
@@ -210,19 +210,19 @@
             wrapper.classList.remove('active');
           }
         });
-        const numTracks = document.getElementById("numTracks");
+        const numTracks = document.getElementById("num_tracks");
         for (let c = 1; c <= 32; c++) {
           const option = document.createElement("option");
           option.value = c;
           option.textContent = c;
           numTracks.appendChild(option);
         }
-        const trackNum = document.getElementById("trackNum");
+        const trackIndex = document.getElementById("track_index");
         for (let c = 1; c <= 32; c++) {
           const option = document.createElement("option");
           option.value = c;
           option.textContent = c;
-          trackNum.appendChild(option);
+          trackIndex.appendChild(option);
         }
         const slider = document.getElementById("duration-slider");
         const label = document.getElementById("duration-label");
@@ -249,7 +249,6 @@
         });
         // browser tab switcher
         document.querySelectorAll(".nav-tab > div").forEach((tab, index) => {
-          console.log("Tab clicked");
           tab.addEventListener("click", () => {
             document.querySelectorAll(".nav-tab > div").forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
@@ -454,6 +453,64 @@
         });
       });
     </script>
+    <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector("#songs-search").addEventListener("submit", (event) => {
+            event.preventDefault();
+            const newFormData = new FormData();
+            newFormData.method = "GET";
+            newFormData.action = "/search/songs";
+            const formData = new FormData(event.target);
+            formData.forEach((value, key) => {
+                switch (key) {
+                    case "query":
+                        if (value.length > 1) {
+                            newFormData.append("name", value);
+                        }
+                        break;
+                    case "bpm":
+                        if (value === "greater_than") {
+                            newFormData.append("bpm_gt", formData.get("bpm-slider"));
+                        } else if(value === "less_than") {
+                            newFormData.append("bpm_lt", formData.get("bpm-slider"));
+                        } else {
+                            newFormData.append("bpm_eq", formData.get("bpm-slider"));
+                        }
+                        break;
+                    case "bpm-slider":
+                        break;
+                    case "duration":
+                        if (value === "greater_than") {
+                            newFormData.append("duration_gt", formData.get("duration-slider"));
+                        } else if(value === "less_than") {
+                            newFormData.append("duration_lt", formData.get("duration-slider"));
+                        } else {
+                            newFormData.append("duration_eq", formData.get("duration-slider"));
+                        }
+                        break;
+                    case "duration-slider":
+                        break;
+                    default:
+                    if (value.length > 1)
+                        newFormData.append(key, value);
+                }
+            });
+            const form = document.createElement("form");
+            form.style.display = "none";
+            form.action = "/search/songs";
+            form.method = "GET";
+            for (const [key, value] of newFormData.entries()) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            document.body.appendChild(form);
+            form.submit();
+        });
+    })
+    </script>
   </head>
   <body>
     <img alt="icon" src="favicon.ico" style="position: absolute; right: 2em; top: 1em;" />
@@ -466,18 +523,20 @@
       <div class="content">
         <div class="artists active">
           <div class="search-container">
-            <form class="search-bar" action="/search" method="GET">
+            <form class="search-bar" action="/search/artists" method="GET">
               <input type="text" name="query" placeholder="Search for artists">
-              <button type="submit">Go</button>
+              <input type="submit" value="Go"/>
               <div class="filter-wrapper">
                 <button class="filter-toggle" type="button">Filter ▾</button>
                 <div class="filter-menu">
                   <label for="country">Country:</label>
-                  <input type="text" id="country" name="country" placeHolder="enter here" <label for="birthYear">Birth Year:</label>
-                  <input type="text" id="birthYear" name="birthYear" placeHolder="enter here" <label> Popularity: <select name="more or less">
-                    <option value="">Greater Than</option>
+                  <input type="text" id="country" name="country" placeHolder="enter here" />
+                  <label for="birthYear">Birth Year:</label>
+                  <input type="text" id="birth_year" name="birthYear" placeHolder="enter here" />
+                  <label> Popularity: <select name="popularity">
+                    <option value="greater_than">Greater Than</option>
                     <option value="exactly">Exactly</option>
-                    <option value="shorter than">Shorter Than</option>
+                    <option value="less_than">Shorter Than</option>
                   </select>
                   <input type="range" name="popularity-slider" id="popularity-slider" min="0" max="100" value="50">
                   <span id="popularity-value">50</span>
@@ -489,9 +548,9 @@
         </div>
         <div class="albums">
           <div class="search-container">
-            <form class="search-bar" action="/search" method="GET">
+            <form class="search-bar" action="/search/albums" method="GET">
               <input type="text" name="query" placeholder="Search for albums">
-              <button type="submit">Go</button>
+              <input type="submit" value="Go"/>
               <div class="filter-wrapper">
                 <button class="filter-toggle" type="button">Filter ▾</button>
                 <div class="filter-menu">
@@ -515,19 +574,19 @@
                     </select>
                   </label>
                   <label>
-                    <label for="numTracks"># of Songs:</label>
-                    <select id="numTracks" name="numTracks">
+                    <label for="num_tracks"># of Songs:</label>
+                    <select id="num_tracks" name="num_tracks">
                       <option value="">Any</option>
                     </select>
-                    <select name="more or less">
-                      <option value="">Greater Than</option>
+                    <select name="more_or_less">
+                      <option value="greater_than">Greater Than</option>
                       <option value="exactly">Exactly</option>
-                      <option value="shorter than">Shorter Than</option>
+                      <option value="less_than">Shorter Than</option>
                     </select>
                   </label>
-                  <label for="releaseYear">Release Year:</label>
-                  <input type="text" id="releaseYear" name="releaseYear" placeHolder="enter here" <label for="recordLabel">Record Label:</label>
-                  <input type="text" id="recordLabel" name="recordLabel" placeHolder="enter here" <label>
+                  <label for="release_year">Release Year:</label>
+                  <input type="text" id="release_year" name="release_year" placeholder="enter here" <label for="record_label">Record Label:</label>
+                  <input type="text" id="record_label_name" name="record_label_name" placeholder="enter here" <label>
                 </div>
               </div>
             </form>
@@ -535,9 +594,9 @@
         </div>
         <div class="songs">
           <div class="search-container">
-            <form class="search-bar" action="/search" method="GET">
-              <input type="text" name="query" placeholder="Search for songs">
-              <button type="submit">Go</button>
+            <form id="songs-search" class="search-bar" action="/search/songs" method="GET">
+              <input type="text" id="query" name="query" placeholder="Search for songs">
+              <input type="submit" value="Go"/>
               <div class="filter-wrapper">
                 <button class="filter-toggle" type="button">Filter ▾</button>
                 <div class="filter-menu">
@@ -555,41 +614,45 @@
                         <option value="rock">Rock</option>
                       </select>
                     </label>
-                    <label for="releaseYear">Release Year:</label>
-                    <input type="text" id="releaseYear" name="releaseYear" placeHolder="enter here" <label for="albumName">Album Name:</label>
-                  <input type="text" id="albumName" name="albumName" placeHolder="enter here" <label>
-                  <label for="trackNum">Track #:</label>
-                  <select id="trackNum" name="trackNum">
+                    <label for="release_year">Release Year:</label>
+                    <input type="text" id="release_year" name="release_year" placeHolder="enter here" <label for="albumName">Album Name:</label>
+                  <input type="text" id="album_name" name="album_name" placeHolder="enter here" <label>
+                  <label for="track_index">Track #:</label>
+                  <select id="track_index" name="track_index">
                     <option value="">Any</option>
                   </select>
                   </label>
                   <label for="lyrics">Lyrics:</label>
-                  <input type="text" id="lyrics" name="lyrics" placeHolder="enter here" <label for="recordLabel">Record Label:</label>
-                  <input type="text" id="recordLabel" name="recordLabel" placeHolder="enter here" <label for="producer">Producer:</label>
-                  <input type="text" id="producer" name="producer" placeHolder="enter here" <label for="writer">Writer:</label>
-                  <input type="text" id="writer" name="writer" placeHolder="enter here" <label> Key: <select name="key">
+                  <input type="text" id="lyrics" name="lyrics" placeHolder="enter here" />
+                  <label for="record_label_name">Record Label:</label>
+                  <input type="text" id="record_label_name" name="record_label_name" placeHolder="enter here" />
+                  <label for="producer">Producer:</label>
+                  <input type="text" id="producer_name" name="producer_name" placeHolder="enter here" />
+                  <label for="writer">Writer:</label>
+                  <input type="text" id="writer_name" name="writer_name" placeHolder="enter here" />
+                  <label> Key: <select name="key">
                     <option value="">Any</option>
-                    <option value="a">A</option>
-                    <option value="b">B</option>
-                    <option value="c">C</option>
-                    <option value="d">D</option>
-                    <option value="e">E</option>
-                    <option value="f">F</option>
-                    <option value="g">G</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="G">G</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
                   </select>
                   </label>
-                  <label> Duration: <select name="more or less">
-                      <option value="">Longer Than</option>
+                  <label> Duration: <select name="duration">
+                      <option value="greater_than">Longer Than</option>
                       <option value="exactly">Exactly</option>
-                      <option value="shorter than">Shorter Than</option>
+                      <option value="less_than">Shorter Than</option>
                     </select>
-                    <input type="range" name="duration" id="duration-slider" min="0" max="600" value="0">
+                    <input type="range" name="duration-slider" id="duration-slider" min="0" max="600" value="0">
                     <span id="duration-label">0:00</span>
                   </label>
-                  <label> BPM: <select name="more or less">
-                      <option value="">Greater Than</option>
+                  <label> BPM: <select name="bpm">
+                      <option value="greater_than">Greater Than</option>
                       <option value="exactly">Exactly</option>
-                      <option value="shorter than">Shorter Than</option>
+                      <option value="less_than">Shorter Than</option>
                     </select>
                     <label for="bpm-slider">Value:</label>
                     <input type="range" name="bpm-slider" id="bpm-slider" min="60" max="200" value="60">
