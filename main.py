@@ -46,7 +46,12 @@ def search_songs():
     record_label_name = request.args.get("record_label_name", type=str)
     genre = request.args.get("genre", type=str)
     key = request.args.get("key", type=str)
-    bpm = request.args.get("bpm", type=int)
+    bpm_eq = request.args.get("bpm_eq", type=int)
+    bpm_gt = request.args.get("bpm_gt", type=int)
+    bpm_lt = request.args.get("bpm_lt", type=int)
+    duration_eq = request.args.get("duration_eq", type=int)
+    duration_gt = request.args.get("duration_gt", type=int)
+    duration_lt = request.args.get("duration_lt", type=int)
     release_year = request.args.get("release_year", type=int)
 
     query = Song.select()
@@ -153,9 +158,29 @@ def search_songs():
         query = query.filter(lambda s: key == s.key)
         title_filters.append(f'with key "{key}"')
 
-    if bpm:
-        query = query.filter(lambda s: bpm is s.bpm)
-        title_filters.append(f'with bpm "{bpm}"')
+    if bpm_eq:
+        query = query.filter(lambda s: s.bpm == bpm_eq)
+        title_filters.append(f'with bpm "{bpm_eq}"')
+
+    if bpm_gt:
+        query = query.filter(lambda s: s.bpm > bpm_gt)
+        title_filters.append(f'with bpm greater than "{bpm_gt}"')
+
+    if bpm_lt:
+        query = query.filter(lambda s: s.bpm < bpm_lt)
+        title_filters.append(f'with bpm less than "{bpm_lt}"')
+
+    if duration_eq:
+        query = query.filter(lambda s: s.duration == duration_eq)
+        title_filters.append(f'with duration "{duration_eq}"')
+
+    if duration_gt:
+        query = query.filter(lambda s: s.duration > duration_gt)
+        title_filters.append(f'with duration greater than "{duration_gt}"')
+
+    if duration_lt:
+        query = query.filter(lambda s: s.duration < duration_lt)
+        title_filters.append(f'with duration less than "{duration_lt}"')
 
     result = [
         {**song.to_dict(with_collections=True, related_objects=True)}
@@ -176,6 +201,9 @@ def search_albums():
     record_label_name = request.args.get("record_label_name", type=str)
     genre = request.args.get("genre", type=str)
     release_year = request.args.get("release_year", type=int)
+    num_tracks_eq = request.args.get("num_tracks_eq", type=int)
+    num_tracks_gt = request.args.get("num_tracks_gt", type=int)
+    num_tracks_lt = request.args.get("num_tracks_lt", type=int)
 
     query = Album.select()
     title_filters = []
@@ -216,6 +244,18 @@ def search_albums():
         query = query.filter(lambda a: genre == a.genre)
         title_filters.append(f'with genre "{genre}"')
 
+    if num_tracks_eq:
+        query = query.filter(lambda a: a.num_tracks == num_tracks_eq)
+        title_filters.append(f"with {num_tracks_eq} tracks")
+
+    if num_tracks_gt:
+        query = query.filter(lambda a: a.num_tracks > num_tracks_gt)
+        title_filters.append(f"with more than {num_tracks_gt} tracks")
+
+    if num_tracks_lt:
+        query = query.filter(lambda a: a.num_tracks < num_tracks_lt)
+        title_filters.append(f"with less than {num_tracks_lt} tracks")
+
     result = [
         {**album.to_dict(with_collections=True, related_objects=True)}
         for album in list(query)
@@ -231,6 +271,9 @@ def search_artists():
     name = request.args.get("name", type=str)
     country = request.args.get("country", type=str)
     birth_year = request.args.get("birth_year", type=int)
+    popularity_eq = request.args.get("popularity_eq", type=int)
+    popularity_gt = request.args.get("popularity_gt", type=int)
+    popularity_lt = request.args.get("popularity_lt", type=int)
 
     query = Artist.select()
     title_filters = []
@@ -252,6 +295,21 @@ def search_artists():
         query = query.filter(lambda a: a.country is country_object)
 
         title_filters.append(f"from {country_object.name}")
+
+    if popularity_eq:
+        query = query.filter(lambda a: a.popularity == popularity_eq)
+
+        title_filters.append(f"with popularity = {popularity_eq}")
+
+    if popularity_gt:
+        query = query.filter(lambda a: a.popularity > popularity_gt)
+
+        title_filters.append(f"with popularity > {popularity_gt}")
+
+    if popularity_lt:
+        query = query.filter(lambda a: a.popularity < popularity_lt)
+
+        title_filters.append(f"with popularity < {popularity_lt}")
 
     result = [
         {**artist.to_dict(with_collections=True, related_objects=True)}

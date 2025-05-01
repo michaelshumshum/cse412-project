@@ -481,7 +481,7 @@
 
           const details = document.createElement("a");
           details.textContent = `BPM: ${entry.bpm} -- Key: ${entry.key}`;
-          details.href = `/search/songs?bpm=${entry.bpm}&key=${entry.key}`;
+          details.href = `/search/songs?bpm_eq=${entry.bpm}&key=${entry.key}`;
           element.appendChild(details);
 
           songs.appendChild(element);
