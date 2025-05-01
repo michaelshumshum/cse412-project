@@ -215,14 +215,20 @@ def search_artists():
     if name:
         query = query.filter(lambda a: a.name.startswith(name))
 
+        title_filters.append(f"named like {name}")
+
     if birth_year:
         query = query.filter(lambda a: a.birthday.year == birth_year)
+
+        title_filters.append(f"born in {birth_year}")
 
     if country:
         country_object = Country.get(name=country)
         if not country_object:
             return abort(404)
         query = query.filter(lambda a: a.country is country_object)
+
+        title_filters.append(f"from {country_object.name}")
 
     result = [
         {**artist.to_dict(with_collections=True, related_objects=True)}

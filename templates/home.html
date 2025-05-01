@@ -235,7 +235,12 @@
             element.appendChild(bio);
 
             const birthdate = document.createElement("p");
-            birthdate.textContent = "Birthdate: " + new Date(entry.birthday).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const birth = new Date(entry.birthday);
+            birthdate.textContent = "Birthdate: ";
+            const birthLink = document.createElement("a");
+            birthLink.textContent = birth.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            birthLink.href = `/search/artists?birth_year=${birth.getFullYear()}`;
+            birthdate.appendChild(birthLink);
             element.appendChild(birthdate);
 
             const country = document.createElement("p");
