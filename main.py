@@ -6,12 +6,19 @@ import db
 from db.db import Album, Artist, Country, Producer, RecordLabel, Song, Writer
 
 app = Flask(__name__)
+app.static_folder = "static"
 
 app.wsgi_app = db.db_session(app.wsgi_app)
 
 db.operations.create_countries()
 
 
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("favicon.ico")
+
+
+@app.route("/")
 @app.route("/")
 def index():
     return render_template("home.html")
