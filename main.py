@@ -43,6 +43,7 @@ def search_songs():
     album_name = request.args.get("album_name", type=str)
     record_label_id = request.args.get("record_label", type=int)
     record_label_name = request.args.get("record_label_name", type=str)
+    track_index = request.args.get("track_index", type=int)
     genre = request.args.get("genre", type=str)
     key = request.args.get("key", type=str)
     bpm_eq = request.args.get("bpm_eq", type=int)
@@ -144,6 +145,10 @@ def search_songs():
         query = query.filter(lambda s: record_label is s.record_label)
 
         title_filters.append(f'from record label "{record_label.name}"')
+
+    if track_index is not None:
+        query = query.filter(lambda s: track_index == s.track_index)
+        title_filters.append(f'with track index "{track_index}"')
 
     if genre is not None:
         query = query.filter(lambda s: genre == s.genre)

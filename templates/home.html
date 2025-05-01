@@ -455,6 +455,44 @@
     </script>
     <script defer>
     document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector("#artists-search").addEventListener("submit", (event) => {
+            event.preventDefault();
+            const newFormData = new FormData();
+            const formData = new FormData(event.target);
+            formData.forEach((value, key) => {
+                switch (key) {
+                    case "popularity":
+                        if (value === "greater_than") {
+                            newFormData.append("popularity_gt", formData.get("popularity-slider"));
+                        } else if (value === "less_than") {
+                            newFormData.append("popularity_lt", formData.get("popularity-slider"));
+                        } else if (value === "equal_to") {
+                            newFormData.append("popularity_eq", formData.get("popularity-slider"));
+                        }
+                        break;
+                    case "popularity-slider":
+                        break;
+                    default:
+                        if (value.length > 0) {
+                            newFormData.append(key, value);
+                        }
+                        break;
+                }
+            })
+            const form = document.createElement("form")
+            form.style.display = "none"
+            form.action = "/search/artists";
+            form.method = "GET";
+            for (const [key, value] of newFormData.entries()) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            document.body.appendChild(form);
+            form.submit();
+        })
         document.querySelector("#albums-search").addEventListener("submit", (event) => {
             event.preventDefault();
             const newFormData = new FormData();
@@ -562,7 +600,7 @@
       <div class="content">
         <div class="artists active">
           <div class="search-container">
-            <form class="search-bar" action="/search/artists" method="GET">
+            <form id="artists-search" class="search-bar" action="/search/artists" method="GET">
               <input type="text" name="query" placeholder="Search for artists">
               <input type="submit" value="Go"/>
               <div class="filter-wrapper">
@@ -575,7 +613,7 @@
                   <label> Popularity: <select name="popularity">
                     <option value="greater_than">Greater Than</option>
                     <option value="exactly">Exactly</option>
-                    <option value="less_than">Shorter Than</option>
+                    <option value="less_than">Less Than</option>
                   </select>
                   <input type="range" name="popularity-slider" id="popularity-slider" min="0" max="100" value="50">
                   <span id="popularity-value">50</span>
@@ -620,7 +658,7 @@
                     <select name="num_tracks">
                       <option value="greater_than">Greater Than</option>
                       <option value="exactly">Exactly</option>
-                      <option value="less_than">Shorter Than</option>
+                      <option value="less_than">Less Than</option>
                     </select>
                   </label>
                   <label for="release_year">Release Year:</label>
@@ -691,7 +729,7 @@
                   <label> BPM: <select name="bpm">
                       <option value="greater_than">Greater Than</option>
                       <option value="exactly">Exactly</option>
-                      <option value="less_than">Shorter Than</option>
+                      <option value="less_than">Less Than</option>
                     </select>
                     <label for="bpm-slider">Value:</label>
                     <input type="range" name="bpm-slider" id="bpm-slider" min="60" max="200" value="60">
