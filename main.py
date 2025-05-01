@@ -56,11 +56,11 @@ def search_songs():
     query = Song.select()
     title_filters = []
 
-    if name:
+    if name is not None:
         query = query.filter(lambda s: name.lower() in s.name.lower())
         title_filters.append(f'"is named like "{name}"')
 
-    if artist_id:
+    if artist_id is not None:
         artist = Artist.get(id=artist_id)
         if not artist:
             return abort(404)
@@ -68,7 +68,7 @@ def search_songs():
         query = query.filter(lambda s: artist in s.artists)
 
         title_filters.append(f'by artist "{artist.name}"')
-    elif artist_name:
+    elif artist_name is not None:
         artist = Artist.get(name=artist_name)
         if not artist:
             return abort(404)
@@ -77,7 +77,7 @@ def search_songs():
 
         title_filters.append(f'by artist "{artist.name}"')
 
-    if producer_id:
+    if producer_id is not None:
         producer = Producer.get(id=producer_id)
         if not producer:
             return abort(404)
@@ -85,7 +85,7 @@ def search_songs():
         query = query.filter(lambda s: producer in s.producers)
 
         title_filters.append(f'by producer "{producer.name}"')
-    elif producer_name:
+    elif producer_name is not None:
         producer = Producer.get(name=producer_name)
         if not producer:
             return abort(404)
@@ -94,7 +94,7 @@ def search_songs():
 
         title_filters.append(f'by producer "{producer.name}"')
 
-    if writer_id:
+    if writer_id is not None:
         writer = Writer.get(id=writer_id)
         if not writer:
             return abort(404)
@@ -102,7 +102,7 @@ def search_songs():
         query = query.filter(lambda s: writer in s.writers)
 
         title_filters.append(f'by writer "{writer.name}"')
-    elif writer_name:
+    elif writer_name is not None:
         writer = Writer.get(name=writer_name)
         if not writer:
             return abort(404)
@@ -111,7 +111,7 @@ def search_songs():
 
         title_filters.append(f'by writer "{writer.name}"')
 
-    if album_id:
+    if album_id is not None:
         album = Album.get(id=album_id)
         if not album:
             return abort(404)
@@ -119,7 +119,7 @@ def search_songs():
         query = query.filter(lambda s: album is s.album)
 
         title_filters.append(f'from album "{album.name}"')
-    elif album_name:
+    elif album_name is not None:
         album = Album.get(name=album_name)
         if not album:
             return abort(404)
@@ -128,7 +128,7 @@ def search_songs():
 
         title_filters.append(f'from album "{album.name}"')
 
-    if record_label_id:
+    if record_label_id is not None:
         record_label = RecordLabel.get(id=record_label_id)
         if not record_label:
             return abort(404)
@@ -136,7 +136,7 @@ def search_songs():
         query = query.filter(lambda s: record_label is s.record_label)
 
         title_filters.append(f'from record label "{record_label.name}"')
-    elif record_label_name:
+    elif record_label_name is not None:
         record_label = RecordLabel.get(name=record_label_name)
         if not record_label:
             return abort(404)
@@ -145,39 +145,39 @@ def search_songs():
 
         title_filters.append(f'from record label "{record_label.name}"')
 
-    if genre:
+    if genre is not None:
         query = query.filter(lambda s: genre == s.genre)
         title_filters.append(f'with genre "{genre}"')
 
-    if release_year:
+    if release_year is not None:
         query = query.filter(lambda s: release_year == s.release_date.year)
         title_filters.append(f"released in {release_year}")
 
-    if key:
+    if key is not None:
         query = query.filter(lambda s: key == s.key)
         title_filters.append(f'with key "{key}"')
 
-    if bpm_eq:
+    if bpm_eq is not None:
         query = query.filter(lambda s: s.bpm == bpm_eq)
         title_filters.append(f'with bpm "{bpm_eq}"')
 
-    if bpm_gt:
+    if bpm_gt is not None:
         query = query.filter(lambda s: s.bpm > bpm_gt)
         title_filters.append(f'with bpm greater than "{bpm_gt}"')
 
-    if bpm_lt:
+    if bpm_lt is not None:
         query = query.filter(lambda s: s.bpm < bpm_lt)
         title_filters.append(f'with bpm less than "{bpm_lt}"')
 
-    if duration_eq:
+    if duration_eq is not None:
         query = query.filter(lambda s: s.duration == duration_eq)
         title_filters.append(f'with duration "{duration_eq}"')
 
-    if duration_gt:
+    if duration_gt is not None:
         query = query.filter(lambda s: s.duration > duration_gt)
         title_filters.append(f'with duration greater than "{duration_gt}"')
 
-    if duration_lt:
+    if duration_lt is not None:
         query = query.filter(lambda s: s.duration < duration_lt)
         title_filters.append(f'with duration less than "{duration_lt}"')
 
@@ -207,51 +207,51 @@ def search_albums():
     query = Album.select()
     title_filters = []
 
-    if name:
+    if name is not None:
         query = query.filter(lambda a: name.lower() in a.name.lower())
         title_filters.append(f'is named like "{name}"')
 
-    if artist_id:
+    if artist_id is not None:
         artist = Artist.get(id=artist_id)
         if not artist:
             abort(404)
         query = query.filter(lambda a: artist in a.artist)
         title_filters.append(f'with artist "{artist.name}"')
-    elif artist_name:
+    elif artist_name is not None:
         artist = Artist.get(name=artist_name)
         if not artist:
             abort(404)
         query = query.filter(lambda a: artist in a.artist)
         title_filters.append(f'with artist "{artist.name}"')
 
-    if record_label_id:
+    if record_label_id is not None:
         record_label = RecordLabel.get(id=record_label_id)
-        query = query.filter(lambda a: a.record_label == record_label)
+        query = query.filter(lambda a: a.record_label is record_label)
         title_filters.append(f'from record label "{record_label.name}"')
-    elif record_label_name:
+    elif record_label_name is not None:
         record_label = RecordLabel.get(name=record_label_name)
         if not record_label:
             abort(404)
-        query = query.filter(lambda a: record_label == a.record_label)
+        query = query.filter(lambda a: record_label is a.record_label)
         title_filters.append(f'from record label "{record_label.name}"')
 
-    if release_year:
+    if release_year is not None:
         query = query.filter(lambda a: release_year == a.release_date.year)
         title_filters.append(f"released in {release_year}")
 
-    if genre:
+    if genre is not None:
         query = query.filter(lambda a: genre == a.genre)
         title_filters.append(f'with genre "{genre}"')
 
-    if num_tracks_eq:
+    if num_tracks_eq is not None:
         query = query.filter(lambda a: a.num_tracks == num_tracks_eq)
         title_filters.append(f"with {num_tracks_eq} tracks")
 
-    if num_tracks_gt:
+    if num_tracks_gt is not None:
         query = query.filter(lambda a: a.num_tracks > num_tracks_gt)
         title_filters.append(f"with more than {num_tracks_gt} tracks")
 
-    if num_tracks_lt:
+    if num_tracks_lt is not None:
         query = query.filter(lambda a: a.num_tracks < num_tracks_lt)
         title_filters.append(f"with less than {num_tracks_lt} tracks")
 
@@ -277,17 +277,17 @@ def search_artists():
     query = Artist.select()
     title_filters = []
 
-    if name:
+    if name is not None:
         query = query.filter(lambda a: a.name.startswith(name))
 
         title_filters.append(f"named like {name}")
 
-    if birth_year:
+    if birth_year is not None:
         query = query.filter(lambda a: a.birthday.year == birth_year)
 
         title_filters.append(f"born in {birth_year}")
 
-    if country:
+    if country is not None:
         country_object = Country.get(name=country)
         if not country_object:
             return abort(404)
@@ -295,17 +295,17 @@ def search_artists():
 
         title_filters.append(f"from {country_object.name}")
 
-    if popularity_eq:
+    if popularity_eq is not None:
         query = query.filter(lambda a: a.popularity == popularity_eq)
 
         title_filters.append(f"with popularity = {popularity_eq}")
 
-    if popularity_gt:
+    if popularity_gt is not None:
         query = query.filter(lambda a: a.popularity > popularity_gt)
 
         title_filters.append(f"with popularity > {popularity_gt}")
 
-    if popularity_lt:
+    if popularity_lt is not None:
         query = query.filter(lambda a: a.popularity < popularity_lt)
 
         title_filters.append(f"with popularity < {popularity_lt}")
