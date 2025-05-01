@@ -6,9 +6,31 @@
   <link rel="icon" href="/favicon.ico">
   <style>
 
+    :root {
+        --highlight: #007bff
+    }
+
+    * {
+        transition: all 0.3s ease;
+        font-family: monospace;
+    }
+
     body {
       margin: 0;
-      font-family: monospace;
+    }
+
+    a {
+        color: black;
+        display: inline-block;
+    }
+
+    a:visited {
+        color: unset;
+    }
+
+    a:hover {
+        color: var(--highlight);
+        transform: skew(-10deg);
     }
 
     .top-bar {
@@ -29,21 +51,19 @@
     }
 
     .search-bar input[type="text"] {
-      padding: 10px;
+      padding: 1em;
       width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 4px 0 0 4px;
+      border: 2px dotted black;
+      border-radius: 0;
       outline: none;
-      font-family: monospace;
     }
 
     .search-bar button {
-      padding: 10px 20px;
-      border: 1px solid #ccc;
-      border-left: none;
-      background-color: #007bff;
+      padding: 1em 2em;
+      border: none;
+      background-color: var(--highlight);
       color: white;
-      border-radius: 0 4px 4px 0;
+      border-radius: 0;
       cursor: pointer;
     }
 
@@ -124,8 +144,16 @@
         border: 2px dotted black;
     }
 
-    .nav-tab > div.active {
+    .nav-tab > div:hover {
         background: white;
+        color: black;
+        border: 2px dotted black;;
+    }
+
+    .nav-tab > div.active {
+        background: var(--highlight);
+        color: white;
+        border: 2px dotted transparent;
     }
 
     .browser {
@@ -462,7 +490,7 @@
   </script>
 </head>
 <body>
-
+    <img alt="icon" src="favicon.ico" style="position: absolute; right: 2em; top: 1em;"/>
 
   <div class="browser">
       <div class="nav-tab">
