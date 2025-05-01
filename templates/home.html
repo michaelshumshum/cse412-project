@@ -298,7 +298,12 @@
           element.appendChild(record);
 
           const releaseDate = document.createElement("p");
-          releaseDate.textContent = new Date(entry.release_date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          const date = new Date(entry.release_date);
+          releaseDate.textContent = "Release Date: ";
+          const release_date_link = document.createElement("a");
+          release_date_link.textContent = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          release_date_link.href = `/search/songs?release_year=${date.getFullYear()}`;
+          releaseDate.appendChild(release_date_link);
           element.appendChild(releaseDate);
 
           albums.appendChild(element);
@@ -379,9 +384,13 @@
           record.appendChild(recordLabelLink);
           element.appendChild(record);
 
-          const releaseDate = document.createElement("a");
-          releaseDate.textContent = "Release Date: " + new Date(entry.release_date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-          releaseDate.href = `/search/songs?release_year=${entry.release_date.year}`;
+          const releaseDate = document.createElement("p");
+          const date = new Date(entry.release_date);
+          releaseDate.textContent = "Release Date: ";
+          const release_date_link = document.createElement("a");
+          release_date_link.textContent = date.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          release_date_link.href = `/search/songs?release_year=${date.getFullYear()}`;
+          releaseDate.appendChild(release_date_link);
           element.appendChild(releaseDate);
 
           const duration = document.createElement("p");
