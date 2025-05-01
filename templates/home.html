@@ -461,6 +461,11 @@
             const formData = new FormData(event.target);
             formData.forEach((value, key) => {
                 switch (key) {
+                    case "query":
+                        if (value.length > 1) {
+                            newFormData.append("name", value);
+                        }
+                        break;
                     case "popularity":
                         if (value === "greater_than") {
                             newFormData.append("popularity_gt", formData.get("popularity-slider"));
@@ -499,6 +504,11 @@
             const formData = new FormData(event.target);
             formData.forEach((value, key) => {
                 switch (key) {
+                    case "query":
+                        if (value.length > 1) {
+                            newFormData.append("name", value);
+                        }
+                        break;
                     case "num_tracks":
                         if (formData.get("num_tracks_value").length === 0) {
                             break;

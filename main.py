@@ -283,7 +283,7 @@ def search_artists():
     title_filters = []
 
     if name is not None:
-        query = query.filter(lambda a: a.name.startswith(name))
+        query = query.filter(lambda a: name.lower() in a.name.lower())
 
         title_filters.append(f"named like {name}")
 
