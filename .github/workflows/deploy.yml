@@ -33,7 +33,6 @@ jobs:
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa app.tar.gz ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             tar -xzvf app.tar.gz && rm app.tar.gz
-            cd app
             service gunicorn restart
             exit
           EOF
