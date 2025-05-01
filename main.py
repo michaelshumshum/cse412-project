@@ -3,7 +3,7 @@ from flask.templating import render_template
 from pony.orm import db_session
 
 import db
-from db.db import Album, Artist, Country, Song
+from db.db import Album, Artist, Country, Producer, RecordLabel, Song, Writer
 
 app = Flask(__name__)
 
@@ -25,12 +25,21 @@ def search():
 
 @app.route("/search/songs")
 @db_session
-def search_artist_by_id():
+def search_songs():
     artist_id = request.args.get("artist", type=int)
+    artist_name = request.args.get("artist_name", type=str)
+    producer_id = request.args.get("producer", type=int)
+    producer_name = request.args.get("producer_name", type=str)
+    writer_id = request.args.get("writer", type=int)
+    writer_name = request.args.get("writer_name", type=str)
     album_id = request.args.get("album", type=int)
+    album_name = request.args.get("album_name", type=str)
+    record_label_id = request.args.get("record_label", type=int)
+    record_label_name = request.args.get("record_label_name", type=str)
     genre = request.args.get("genre", type=str)
     key = request.args.get("key", type=str)
     bpm = request.args.get("bpm", type=int)
+    release_year = request.args.get("release_year", type=int)
 
     query = Song.select()
     title_filters = []
@@ -43,6 +52,48 @@ def search_artist_by_id():
         query = query.filter(lambda s: artist in s.artists)
 
         title_filters.append(f'by artist "{artist.name}"')
+    elif artist_name:
+        artist = Artist.get(name=artist_name)
+        if not artist:
+            return abort(404)
+
+        query = query.filter(lambda s: artist in s.artists)
+
+        title_filters.append(f'by artist "{artist.name}"')
+
+    if producer_id:
+        producer = Producer.get(id=producer_id)
+        if not producer:
+            return abort(404)
+
+        query = query.filter(lambda s: producer in s.producers)
+
+        title_filters.append(f'by producer "{producer.name}"')
+    elif producer_name:
+        producer = Producer.get(name=producer_name)
+        if not producer:
+            return abort(404)
+
+        query = query.filter(lambda s: producer in s.producers)
+
+        title_filters.append(f'by producer "{producer.name}"')
+
+    if writer_id:
+        writer = Writer.get(id=writer_id)
+        if not writer:
+            return abort(404)
+
+        query = query.filter(lambda s: writer in s.writers)
+
+        title_filters.append(f'by writer "{writer.name}"')
+    elif writer_name:
+        writer = Writer.get(name=writer_name)
+        if not writer:
+            return abort(404)
+
+        query = query.filter(lambda s: writer in s.writers)
+
+        title_filters.append(f'by writer "{writer.name}"')
 
     if album_id:
         album = Album.get(id=album_id)
@@ -52,10 +103,39 @@ def search_artist_by_id():
         query = query.filter(lambda s: album is s.album)
 
         title_filters.append(f'from album "{album.name}"')
+    elif album_name:
+        album = Album.get(name=album_name)
+        if not album:
+            return abort(404)
+
+        query = query.filter(lambda s: album is s.album)
+
+        title_filters.append(f'from album "{album.name}"')
+
+    if record_label_id:
+        record_label = RecordLabel.get(id=record_label_id)
+        if not record_label:
+            return abort(404)
+
+        query = query.filter(lambda s: record_label is s.record_label)
+
+        title_filters.append(f'from record label "{record_label.name}"')
+    elif record_label_name:
+        record_label = RecordLabel.get(name=record_label_name)
+        if not record_label:
+            return abort(404)
+
+        query = query.filter(lambda s: record_label is s.record_label)
+
+        title_filters.append(f'from record label "{record_label.name}"')
 
     if genre:
         query = query.filter(lambda s: genre == s.genre)
         title_filters.append(f'with genre "{genre}"')
+
+    if release_year:
+        query = query.filter(lambda s: release_year == s.release_date.year)
+        title_filters.append(f'released in "{release_year}"')
 
     if key:
         query = query.filter(lambda s: key == s.key)

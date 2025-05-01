@@ -290,7 +290,11 @@
           element.appendChild(artists);
 
           const record = document.createElement("p");
-          record.textContent = `Record Label: ${entry.record_label.name}`;
+          record.textContent = "Record Label: ";
+          const recordLabelLink = document.createElement("a");
+          recordLabelLink.textContent = entry.record_label.name;
+          recordLabelLink.href = `/search/songs?record_label=${entry.record_label.id}`;
+          record.appendChild(recordLabelLink);
           element.appendChild(record);
 
           const releaseDate = document.createElement("p");
@@ -342,25 +346,42 @@
           element.appendChild(artists);
 
           const producers = document.createElement("p");
+          producers.textContent = "Producers: "
           for (const p of entry.producers) {
-            producers.textContent += p.name + ", ";
+            const link = document.createElement("a");
+            link.textContent = p.name;
+            link.href = `/search/songs?producer=${p.id}`;
+            producers.appendChild(link);
+            if (p !== entry.producers[entry.producers.length - 1]) {
+                producers.appendChild(document.createTextNode(", "));
+            }
           }
-          producers.textContent = "Producers: " + producers.textContent.slice(0, -2);
           element.appendChild(producers);
 
           const writers = document.createElement("p");
+          writers.textContent = "Writers: "
           for (const w of entry.writers) {
-            writers.textContent += w.name + ", ";
+              const link = document.createElement("a");
+              link.textContent = w.name;
+              link.href = `/search/songs?writer=${w.id}`;
+              writers.appendChild(link);
+              if (w !== entry.writers[entry.writers.length - 1]) {
+                  writers.appendChild(document.createTextNode(", "));
+              }
           }
-          writers.textContent = "Writers: " + writers.textContent.slice(0, -2);
           element.appendChild(writers);
 
           const record = document.createElement("p");
-          record.textContent = `Record Label: ${entry.record_label.name}`;
+          record.textContent = "Record Label: ";
+          const recordLabelLink = document.createElement("a");
+          recordLabelLink.textContent = entry.record_label.name;
+          recordLabelLink.href = `/search/songs?record_label=${entry.record_label.id}`;
+          record.appendChild(recordLabelLink);
           element.appendChild(record);
 
-          const releaseDate = document.createElement("p");
+          const releaseDate = document.createElement("a");
           releaseDate.textContent = "Release Date: " + new Date(entry.release_date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          releaseDate.href = `/search/songs?release_year=${entry.release_date.year}`;
           element.appendChild(releaseDate);
 
           const duration = document.createElement("p");
