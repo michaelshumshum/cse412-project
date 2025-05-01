@@ -113,6 +113,35 @@ def search_artist_by_id():
     )
 
 
+@app.route("/search/artists")
+def search_artists():
+    name = request.args.get("name")
+    country = request.args.get("country")
+
+    query = Artist.select()
+    title_filters = []
+
+    if name:
+        query = query.filter(lambda a: a.name.startswith(name))
+
+    if country:
+        query = query.filter(lambda a: a.country == country)
+
+    result = [
+        {**artist.to_dict(with_collections=True, related_objects=True)}
+        for artist in list(query.distinct())
+    ]
+
+    return render_template(
+        "search_result.html",
+        title=f"Artists {', '.join(title_filters)}",
+        artists=result,
+    )
+
+
+# regular getting
+
+
 @app.route("/songs")
 @db_session
 def get_songs():

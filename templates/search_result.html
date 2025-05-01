@@ -28,8 +28,18 @@
       </div>
       {% endfor %}
     </div>
-    {% else %}
-    <p>No results found.</p>
+    {% elif artists %}
+    <div class="artists">
+      {% for artist in artists %}
+      <div class="artist">
+        <h2>{{ artist.name }}</h2>
+        <p>Biography: {{ artist.biography }}</p>
+        <p>Country: {{ artist.country.name }}</p>
+        <p>Birthdate: {{ artist.birthday }}</p>
+        <p>Popularity: {{ artist.popularity }}</p>
+      </div>
+      {% endfor %}
+    </div>
     {% endif %}
   </body>
 </html>
