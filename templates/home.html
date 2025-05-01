@@ -23,6 +23,11 @@
       width: 100%;
     }
 
+    .search-container {
+        grid-column: 1/3;
+        margin: 1em;
+    }
+
     .search-bar input[type="text"] {
       padding: 10px;
       width: 100%;
@@ -457,7 +462,7 @@
 </head>
 <body>
 
- 
+
   <div class="browser">
       <div class="nav-tab">
           <div class="active">Artists</div>
@@ -470,17 +475,17 @@
               <form class="search-bar" action="/search" method="GET">
                 <input type="text" name="query" placeholder="Search for artists">
                 <button type="submit">Go</button>
-          
+
                 <div class="filter-wrapper">
                   <button class="filter-toggle" type="button">Filter ▾</button>
                   <div class="filter-menu">
-          
+
                     <label for="country">Country:</label>
                     <input type="text" id="country" name="country" placeHolder="enter here"
-          
+
                     <label for="birthYear">Birth Year:</label>
                     <input type="text" id="birthYear" name="birthYear" placeHolder="enter here"
-          
+
                     <label>
                       Popularity:
                       <select name="more or less">
@@ -502,11 +507,11 @@
               <form class="search-bar" action="/search" method="GET">
                 <input type="text" name="query" placeholder="Search for albums">
                 <button type="submit">Go</button>
-          
+
                 <div class="filter-wrapper">
                   <button class="filter-toggle" type="button">Filter ▾</button>
                   <div class="filter-menu">
-          
+
                     <label>
                      Genre:
                       <select name="genre">
@@ -542,14 +547,14 @@
                       <option value="exactly">Exactly</option>
                       <option value="shorter than">Shorter Than</option>
                     </select>
-                   </label> 
-          
+                   </label>
+
                     <label for="releaseYear">Release Year:</label>
                     <input type="text" id="releaseYear" name="releaseYear" placeHolder="enter here"
-          
+
                     <label for="recordLabel">Record Label:</label>
                     <input type="text" id="recordLabel" name="recordLabel" placeHolder="enter here"
-          
+
                     <label>
                   </div>
                </div>
@@ -563,7 +568,7 @@
               <form class="search-bar" action="/search" method="GET">
                 <input type="text" name="query" placeholder="Search for songs">
                 <button type="submit">Go</button>
-          
+
                 <div class="filter-wrapper">
                   <button class="filter-toggle" type="button">Filter ▾</button>
                   <div class="filter-menu">
@@ -584,7 +589,7 @@
                            <option value="rock">Rock</option>
                          </select>
                        </label>
-             
+
                        <label for="releaseYear">Release Year:</label>
                        <input type="text" id="releaseYear" name="releaseYear" placeHolder="enter here"
 
@@ -596,17 +601,17 @@
                         <select id="trackNum" name="trackNum">
                           <option value="">Any</option>
                         </select>
-                       </label> 
+                       </label>
 
                        <label for="lyrics">Lyrics:</label>
                        <input type="text" id="lyrics" name="lyrics" placeHolder="enter here"
-             
+
                        <label for="recordLabel">Record Label:</label>
                        <input type="text" id="recordLabel" name="recordLabel" placeHolder="enter here"
-          
+
                     <label for="producer">Producer:</label>
                     <input type="text" id="producer" name="producer" placeHolder="enter here"
-          
+
                     <label for="writer">Writer:</label>
                     <input type="text" id="writer" name="writer" placeHolder="enter here"
 
