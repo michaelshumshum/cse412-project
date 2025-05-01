@@ -19,7 +19,6 @@ def favicon():
 
 
 @app.route("/")
-@app.route("/")
 def index():
     return render_template("home.html")
 
@@ -27,7 +26,7 @@ def index():
 # methods for searching
 @app.route("/search", methods=["GET"])
 def search():
-    return render_template("search_request.html")
+    return abort(400)
 
 
 @app.route("/search/songs")
