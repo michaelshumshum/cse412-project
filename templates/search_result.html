@@ -25,6 +25,7 @@
           Writers: {% for writer in song.writers %} {{ writer.name }}, {% endfor
           %}
         </p>
+        <p>BPM: {{ song.bpm }} -- Key: {{ song.key }}</p>
       </div>
       {% endfor %}
     </div>

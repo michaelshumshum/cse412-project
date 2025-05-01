@@ -3,7 +3,7 @@ from flask.templating import render_template
 from pony.orm import db_session
 
 import db
-from db.db import Album, Artist, Song
+from db.db import Album, Artist, Country, Song
 
 app = Flask(__name__)
 
@@ -29,6 +29,8 @@ def search_artist_by_id():
     artist_id = request.args.get("artist", type=int)
     album_id = request.args.get("album", type=int)
     genre = request.args.get("genre", type=str)
+    key = request.args.get("key", type=str)
+    bpm = request.args.get("bpm", type=int)
 
     query = Song.select()
     title_filters = []
@@ -54,6 +56,14 @@ def search_artist_by_id():
     if genre:
         query = query.filter(lambda s: genre == s.genre)
         title_filters.append(f'with genre "{genre}"')
+
+    if key:
+        query = query.filter(lambda s: key == s.key)
+        title_filters.append(f'with key "{key}"')
+
+    if bpm:
+        query = query.filter(lambda s: bpm is s.bpm)
+        title_filters.append(f'with bpm "{bpm}"')
 
     result = [
         {**song.to_dict(with_collections=True, related_objects=True)}
@@ -115,8 +125,9 @@ def search_artist_by_id():
 
 @app.route("/search/artists")
 def search_artists():
-    name = request.args.get("name")
-    country = request.args.get("country")
+    name = request.args.get("name", type=str)
+    country = request.args.get("country", type=str)
+    birth_year = request.args.get("birth_year", type=int)
 
     query = Artist.select()
     title_filters = []
@@ -124,8 +135,14 @@ def search_artists():
     if name:
         query = query.filter(lambda a: a.name.startswith(name))
 
+    if birth_year:
+        query = query.filter(lambda a: a.birthday.year == birth_year)
+
     if country:
-        query = query.filter(lambda a: a.country == country)
+        country_object = Country.get(name=country)
+        if not country_object:
+            return abort(404)
+        query = query.filter(lambda a: a.country is country_object)
 
     result = [
         {**artist.to_dict(with_collections=True, related_objects=True)}

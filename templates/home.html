@@ -239,7 +239,11 @@
             element.appendChild(birthdate);
 
             const country = document.createElement("p");
-            country.textContent = entry.country;
+            country.textContent = "Country: ";
+            const country_link = document.createElement("a");
+            country_link.textContent = entry.country;
+            country_link.href = `/search/artists?country=${entry.country}`;
+            country.appendChild(country_link);
             element.appendChild(country);
 
             const popularity = document.createElement("p");
@@ -265,7 +269,11 @@
           element.appendChild(name);
 
           const genre = document.createElement("p");
-          genre.textContent = `Genre: ${entry.genre}`;
+          genre.textContent = "Genre: ";
+          const genre_link = document.createElement("a");
+          genre_link.textContent = entry.genre;
+          genre_link.href = `/search/songs?genre=${entry.genre}`;
+          genre.appendChild(genre_link);
           element.appendChild(genre);
 
           const artists = document.createElement("p");
@@ -305,7 +313,11 @@
           element.appendChild(title);
 
           const genre = document.createElement("p");
-          genre.textContent = "Genre: " + entry.genre;
+          genre.textContent = "Genre: ";
+          const genre_link = document.createElement("a");
+          genre_link.textContent = entry.genre;
+          genre_link.href = `/search/songs?genre=${entry.genre}`;
+          genre.appendChild(genre_link);
           element.appendChild(genre);
 
           const album = document.createElement("p");
@@ -355,8 +367,9 @@
           duration.textContent = "Duration: " +  secondsToDuration(entry.duration);
           element.appendChild(duration);
 
-          const details = document.createElement("p");
+          const details = document.createElement("a");
           details.textContent = `BPM: ${entry.bpm} -- Key: ${entry.key}`;
+          details.href = `/search/songs?bpm=${entry.bpm}&key=${entry.key}`;
           element.appendChild(details);
 
           songs.appendChild(element);
