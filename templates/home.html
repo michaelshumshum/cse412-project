@@ -224,7 +224,10 @@
             element.classList.add('entry');
 
             const name = document.createElement("h2");
-            name.textContent = entry.name;
+            const link = document.createElement("a");
+            link.textContent = entry.name;
+            link.href = `/search/artist/${entry.id}`;
+            name.appendChild(link);
             element.appendChild(name);
 
             const bio = document.createElement("p");
@@ -232,7 +235,7 @@
             element.appendChild(bio);
 
             const birthdate = document.createElement("p");
-            birthdate.textContent = new Date(entry.birthday).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            birthdate.textContent = "Birthdate: " + new Date(entry.birthday).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             element.appendChild(birthdate);
 
             const country = document.createElement("p");
@@ -255,15 +258,35 @@
           element.classList.add('entry');
 
           const name = document.createElement("h2");
-          name.textContent = entry.name;
+          const link = document.createElement("a");
+          link.textContent = entry.name;
+          link.href = `/search/album/${entry.id}`;
+          name.appendChild(link);
           element.appendChild(name);
 
-          const artist = document.createElement("p");
-          artist.textContent = entry.artist;
-          element.appendChild(artist);
+          const genre = document.createElement("p");
+          genre.textContent = `Genre: ${entry.genre}`;
+          element.appendChild(genre);
+
+          const artists = document.createElement("p");
+          artists.textContent = "Artists: "
+          for (const a of entry.artists) {
+              const artist = document.createElement("a");
+              artist.textContent = a.name;
+              artist.href = `/search/artist/${a.id}`;
+              artists.appendChild(artist);
+              if (a !== entry.artists[entry.artists.length - 1]) {
+                  artists.appendChild(document.createTextNode(", "));
+              }
+          }
+          element.appendChild(artists);
+
+          const record = document.createElement("p");
+          record.textContent = `Record Label: ${entry.record_label.name}`;
+          element.appendChild(record);
 
           const releaseDate = document.createElement("p");
-          releaseDate.textContent = new Date(entry.release_date).toLocaleDateString();
+          releaseDate.textContent = new Date(entry.release_date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
           element.appendChild(releaseDate);
 
           albums.appendChild(element);
@@ -281,8 +304,16 @@
           title.textContent = entry.name;
           element.appendChild(title);
 
+          const genre = document.createElement("p");
+          genre.textContent = "Genre: " + entry.genre;
+          element.appendChild(genre);
+
           const album = document.createElement("p");
-          album.textContent = "Album: " + entry.album.name;
+          album.textContent = "Album: ";
+          const album_link = document.createElement("a");
+          album_link.textContent = entry.album.name;
+          album_link.href = `/search/album/${entry.album.id}`;
+          album.appendChild(album_link);
           element.appendChild(album);
 
           const artists = document.createElement("p");
@@ -292,7 +323,9 @@
               artist.textContent = a.name;
               artist.href = `/search/artist/${a.id}`;
               artists.appendChild(artist);
-              artists.appendChild(document.createTextNode(", "));
+              if (a !== entry.artists[entry.artists.length - 1]) {
+                  artists.appendChild(document.createTextNode(", "));
+              }
           }
           element.appendChild(artists);
 
@@ -309,6 +342,10 @@
           }
           writers.textContent = "Writers: " + writers.textContent.slice(0, -2);
           element.appendChild(writers);
+
+          const record = document.createElement("p");
+          record.textContent = `Record Label: ${entry.record_label.name}`;
+          element.appendChild(record);
 
           const releaseDate = document.createElement("p");
           releaseDate.textContent = "Release Date: " + new Date(entry.release_date).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });

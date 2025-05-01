@@ -83,7 +83,73 @@ def search_artist_by_id(artist_id: int):
             "name": song["record_label"].name,
         }
 
-    return render_template("search_result.html", songs=result)
+    return render_template(
+        "search_result.html", title=f"Songs by artist '{artist.name}'", songs=result
+    )
+
+
+@app.route("/search/album/<int:album_id>")
+def search_album(album_id: int):
+    album = Album.get(id=album_id)
+    if not album:
+        return abort(404)
+
+    result = [
+        {**song.to_dict(with_collections=True, related_objects=True)}
+        for song in list(Song.select(lambda s: s.album is album))
+    ]
+
+    # serialize the nested collections
+    for song in result:
+        a_l = []
+        for artist in song["artists"]:
+            d = {
+                "id": artist.id,
+                "name": artist.name,
+            }
+            a_l.append(d)
+        song["artists"] = a_l
+
+        p_l = []
+        for producer in song["producers"]:
+            d = {
+                "id": producer.id,
+                "name": producer.name,
+            }
+            p_l.append(d)
+        song["producers"] = p_l
+
+        w_l = []
+        for writer in song["writers"]:
+            d = {
+                "id": writer.id,
+                "name": writer.name,
+            }
+            w_l.append(d)
+        song["writers"] = w_l
+
+        m_l = []
+        for music_video in song["music_videos"]:
+            d = {
+                "id": music_video.id,
+                "name": music_video.name,
+            }
+            m_l.append(d)
+        song["music_videos"] = m_l
+
+        song["album"] = {
+            "id": song["album"].id,
+            "name": song["album"].name,
+        }
+
+        song["record_label"] = {
+            "id": song["record_label"].id,
+            "name": song["record_label"].name,
+        }
+
+    return render_template(
+        "search_result.html", title=f"Songs in album '{album.name}'", songs=result
+    )
 
 
 @app.route("/songs")
@@ -176,16 +242,37 @@ def get_artists():
 @app.route("/albums")
 @db_session
 def get_albums():
-    artist_names = request.args.get("artist")
+    artist_name = request.args.get("artist")
 
     query = Album.select()
 
-    if artist_names:
-        artists = [
-            Artist.get(name=artist_name) for artist_name in artist_names.split(",")
-        ]
-        if not all(artists):
+    if artist_name:
+        artist = Artist.get(name=artist_name)
+        if not artist:
             return abort(404)
-        query.filter(lambda a: a)
+        query.filter(lambda a: artist in a.artist)
 
-    return [{**album.to_dict()} for album in list(query.distinct())]
+    result = [
+        {**album.to_dict(with_collections=True, related_objects=True)}
+        for album in list(query.distinct())
+    ]
+
+    for album in result:
+        a_l = []
+        for artist in album["artist"]:
+            d = {
+                "id": artist.id,
+                "name": artist.name,
+            }
+            a_l.append(d)
+        del album["artist"]
+        album["artists"] = a_l
+
+        album["record_label"] = {
+            "id": album["record_label"].id,
+            "name": album["record_label"].name,
+        }
+
+        del album["songs"]
+
+    return result
